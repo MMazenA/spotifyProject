@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 import time
 
 
-
+#provides accesstoken through refreshtoken recieved from manualuserAuth
 def getAccessToken():
     client_id='aa1826bc005040e98502bf7d9e6d5ba2'
     secret_id='.'

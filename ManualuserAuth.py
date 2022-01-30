@@ -22,9 +22,8 @@ userauthenticate=(
 
 
 
-
+#authentication using flask for browser
 app= Flask(__name__)
-
 
 def authenticate():
 

@@ -6,6 +6,7 @@ app= Flask(__name__)
 client_id='aa1826bc005040e98502bf7d9e6d5ba2'
 secret_id='.'
 
+
 userauthenticate=(
     "response_type=code" +
     '&client_id='+client_id +
