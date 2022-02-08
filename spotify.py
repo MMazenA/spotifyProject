@@ -1,6 +1,7 @@
 
 from ast import Str
 from os import access
+from platform import python_branch
 from re import S
 from urllib import response
 import requests
@@ -9,6 +10,7 @@ import base64
 from urllib.parse import urlencode
 import time
 import privateInfo  # file containing client codes
+import pythonSQL
 
 
 def getAccessToken():
@@ -16,6 +18,12 @@ def getAccessToken():
     secret_id = privateInfo.secretID()
 
     token_url = "https://accounts.spotify.com/api/token"
+
+    # token_data_refresh = {
+    #    "grant_type": "authorization_code",
+    #    "code": "code from manualuserAuth",
+    #    "redirect_uri": "http://127.0.0.1:5000/home/"
+    # }
 
     token_data_refresh = {
         "grant_type": "refresh_token",
@@ -32,10 +40,10 @@ def getAccessToken():
     r = requests.post(token_url, data=token_data_refresh,
                       headers=token_headers)
     resp_json = r.json()
+    # print(resp_json)
     requested_access_token = resp_json['access_token']
     # print(r.json())
     # print(requested_access_token)
-    # s_access_token=s_access_token= 'BQCsGhfymKzbYVXf_dP8M4OaUooU5DDQiS5Eqec7RPGGuBMBUxiqewQlWFKLS-8ygf4-4x1hBPkHvCIMmdQ_6GfJISdpbPOtSdUPSezFSxmOUvSkmD3ZcU8MZJhTC8kVAAE4zzxVCsVrZF6WHnYpkieoMw'
 
     return requested_access_token
 
@@ -67,22 +75,22 @@ def current_track(access_token):
         main_artist = resp_json['item']['artists'][0]['name']
         artists_name = ', '.join([artist['name'] for artist in artists])
         time = [0, 0]
-        position = resp_json['progress_ms']/1000
-        time[0] = (int((position)/60))
-        time[1] = (int((position) % 60))
+        position = resp_json['progress_ms']
+        time[0] = (int((position/1000)/60))
+        time[1] = (int((position/1000) % 60))
         pic = resp_json['item']['album']['images'][0]['url']
         playing = resp_json['is_playing']
         length = [0, 0]
-        length_raw = (resp_json['item']["duration_ms"])/1000
-        length[0] = (int((length_raw)/60))
-        length[1] = (int((length_raw) % 60))
+        length_raw = (resp_json['item']["duration_ms"])
+        length[0] = (int((length_raw/1000)/60))
+        length[1] = (int((length_raw/1000) % 60))
         # percent_complete=f"% {position*100/length_raw}"
         current_track_info = {
             "id": track_id,
             "name": track_name,
             "artists": artists_name,
-            "position": time,
-            "length": length,
+            "position": position,
+            "length": length_raw,
             "picture": pic,
             "is_playing": playing,
             "main_artist": main_artist,
@@ -100,8 +108,10 @@ def main():
     while(True):
         listining_info = current_track(token)
         # print(token)
-        pprint(listining_info, indent=4)
+        #pprint(listining_info, indent=4)
         if(listining_info != 0):
+            print(f"{listining_info.get('id')},{song_name}")
+            # pythonSQL.dataInsert()
             time.sleep(5)
 
         # sql stuff

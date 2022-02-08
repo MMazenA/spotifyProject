@@ -1,5 +1,7 @@
 import sqlite3
 from sqlite3 import Error
+
+from testSQL import create_connection
 #from turtle import exitonclick
 
 
@@ -30,7 +32,7 @@ def makeTable(name):
             song_length text,
             total_play_time text,
             current_play_time text,
-            pic_link text text
+            pic_link text
             );"""
 
     conn = sqlite3.connect(database)
@@ -40,4 +42,25 @@ def makeTable(name):
     print("plz")
 
 
-makeTable("Table")
+# makeTable("Table")
+
+def dataInsert(x):
+    # db="Table.db"
+
+    sql = '''insert or replace into current(song_id,song_name,artists,primary_artist,
+    song_length,total_play_time,current_play_time,pic_link)
+    VALUES(?,?,?,?,?,?,?,?)
+    '''
+    #conn = sqlite3.connect("Table.db")
+    database = r"Table.db"
+    conn = create_connection(database)
+    with conn:
+       # print(conn)
+        cur = conn.cursor()
+        cur.execute(sql, x)
+        conn.commit()
+        #print(cur.lastrowid)
+        return cur.lastrowid
+
+
+dataInsert((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
