@@ -31,7 +31,7 @@ def makeTable(name):
             artists text,
             primary_artist text,
             song_length text,
-            total_play_time text,
+            total_play_count int,
             current_play_time text,
             pic_link text
             );"""
@@ -50,7 +50,7 @@ def dataInsert(x):
     # db="Table.db"
 
     sql = '''insert or replace into current(song_id,song_name,artists,primary_artist,
-    song_length,total_play_time,current_play_time,pic_link)
+    song_length,total_play_count,current_play_time,pic_link)
     VALUES(?,?,?,?,?,?,?,?)
     '''
     # conn = sqlite3.connect("Table.db")
@@ -78,5 +78,3 @@ def lastRow():
 # xd = "(xx, y, 'mazen and me', 'me', '55', '52', '53', 'youtube.com')"
 # dataInsert((str(xx), y, 'XDDDDD', 'me', '55', '52', '53', 'youtube.com'))
 # print((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
-
-
