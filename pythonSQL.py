@@ -1,7 +1,8 @@
 import sqlite3
 from sqlite3 import Error
+#from tkinter import X
 
-from testSQL import create_connection
+#from testSQL import create_connection
 #from turtle import exitonclick
 
 
@@ -15,7 +16,7 @@ def makeTable(name):
 
     sql_create_total_play_time = """
         CREATE TABLE IF NOT EXISTS total (
-            song_id integer PRIMARY KEY,
+            song_id text PRIMARY KEY,
             song_name text NOT NULL,
             artists text,
             primary_artist text,
@@ -25,7 +26,7 @@ def makeTable(name):
 
     sql_create_current_tracker = """CREATE TABLE IF NOT EXISTS current (
             
-            song_id integer PRIMARY KEY,
+            song_id text PRIMARY KEY,
             song_name text NOT NULL,
             artists text,
             primary_artist text,
@@ -53,14 +54,20 @@ def dataInsert(x):
     '''
     #conn = sqlite3.connect("Table.db")
     database = r"Table.db"
-    conn = create_connection(database)
+    conn = sqlite3.connect(database)
     with conn:
-       # print(conn)
+        # print(conn)
         cur = conn.cursor()
         cur.execute(sql, x)
         conn.commit()
-        #print(cur.lastrowid)
+        # print(cur.lastrowid)
         return cur.lastrowid
 
 
-dataInsert((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
+makeTable("Table")
+xx = 5400
+y = 'XD'
+
+xd = "(xx, y, 'mazen and me', 'me', '55', '52', '53', 'youtube.com')"
+dataInsert((str(xx), y, 'XDDDDD', 'me', '55', '52', '53', 'youtube.com'))
+#print((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))

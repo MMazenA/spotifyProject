@@ -3,6 +3,7 @@ from ast import Str
 from os import access
 from platform import python_branch
 from re import S
+from timeit import repeat
 from urllib import response
 import requests
 from pprint import pprint
@@ -20,9 +21,9 @@ def getAccessToken():
     token_url = "https://accounts.spotify.com/api/token"
 
     # token_data_refresh = {
-    #    "grant_type": "authorization_code",
-    #    "code": "code from manualuserAuth",
-    #    "redirect_uri": "http://127.0.0.1:5000/home/"
+    # "grant_type": "authorization_code",
+    #  "code": "AQDbVeE5sVzaCq1PczSOZTa-5gQiTJR98FTYI5vHYlZPS5oUs7hY3Fy9eEO1IKsBjWoeGd_EfyaAJ-DUIf9JlIhUfiQi6Hr4ssUBKpCXe1Gocxq3vfoNQYbTCBHNg5jkuy31szCIQtgFreMd_MRJDtNfdkCmifXHdwqqv9RcNCY6_XMZ2rBfegjKAnlQL-eO291CEdqJuATaWo9fkZvNbKExZ4Qt6e6AAmyiZmxjqM7KQQ4M0q3dLIVs0p_CQPvoI2EOKMzsaBzOvXnisp0ssnAylw",
+    #   "redirect_uri": "http://127.0.0.1:5000/home/"
     # }
 
     token_data_refresh = {
@@ -40,7 +41,7 @@ def getAccessToken():
     r = requests.post(token_url, data=token_data_refresh,
                       headers=token_headers)
     resp_json = r.json()
-    # print(resp_json)
+    # print(resp_json)           #prints token ,type,scope
     requested_access_token = resp_json['access_token']
     # print(r.json())
     # print(requested_access_token)
@@ -49,6 +50,10 @@ def getAccessToken():
 
 
 def current_track(access_token):
+    global token
+    if(token == 0):
+        token = getAccessToken()
+
     current_track_url = 'https://api.spotify.com/v1/me/player'
     response = requests.get(
         current_track_url,
@@ -61,7 +66,6 @@ def current_track(access_token):
    # response = Str(response)
     # print(response.status_code)
     # print(type(response))
-    global token
     # print(token)
     if(response.status_code != 200):
 
@@ -107,11 +111,19 @@ def main():
     token = 0
     while(True):
         listining_info = current_track(token)
-        # print(token)
-        #pprint(listining_info, indent=4)
-        if(listining_info != 0):
-            print(f"{listining_info.get('id')},{song_name}")
-            # pythonSQL.dataInsert()
+        pprint(listining_info, indent=4)
+        if(listining_info != 0):  # if data is available
+
+            payload = (str(listining_info.get('id')),
+                       str(listining_info.get('name')),
+                       str(listining_info.get('artists')),
+                       str(listining_info.get('main_artist')),
+                       str(listining_info.get('length')),
+                       int('0'),
+                       str(listining_info.get('position')),
+                       str(listining_info.get('picture')))
+            # print(payload)
+            pythonSQL.dataInsert((payload))
             time.sleep(5)
 
         # sql stuff
