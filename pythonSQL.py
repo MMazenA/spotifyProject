@@ -1,9 +1,9 @@
 import sqlite3
 from sqlite3 import Error
-#from tkinter import X
+# from tkinter import X
 
-#from testSQL import create_connection
-#from turtle import exitonclick
+# from testSQL import create_connection
+# from turtle import exitonclick
 
 
 def create_table(conn, create_table_sql):
@@ -21,12 +21,12 @@ def makeTable(name):
             artists text,
             primary_artist text,
             song_length text,
-            lifetime_play_time text              
+            lifetime_play_time text
             ); """
 
     sql_create_current_tracker = """CREATE TABLE IF NOT EXISTS current (
             
-            song_id text PRIMARY KEY,
+            song_id text NOT NULL PRIMARY KEY,
             song_name text NOT NULL,
             artists text,
             primary_artist text,
@@ -45,6 +45,7 @@ def makeTable(name):
 
 # makeTable("Table")
 
+
 def dataInsert(x):
     # db="Table.db"
 
@@ -52,7 +53,7 @@ def dataInsert(x):
     song_length,total_play_time,current_play_time,pic_link)
     VALUES(?,?,?,?,?,?,?,?)
     '''
-    #conn = sqlite3.connect("Table.db")
+    # conn = sqlite3.connect("Table.db")
     database = r"Table.db"
     conn = sqlite3.connect(database)
     with conn:
@@ -64,10 +65,18 @@ def dataInsert(x):
         return cur.lastrowid
 
 
-makeTable("Table")
-xx = 5400
-y = 'XD'
+def lastRow():
+    database = r"Table.db"
+    conn = sqlite3.connect(database)
+    with conn:
+        sql = '''select *from current ORDER BY rowid DESC LIMIT 1'''
+        cur = conn.cursor()
+        last = cur.execute(sql)
+        last_row = cur.fetchone()
+        return last_row
 
-xd = "(xx, y, 'mazen and me', 'me', '55', '52', '53', 'youtube.com')"
-dataInsert((str(xx), y, 'XDDDDD', 'me', '55', '52', '53', 'youtube.com'))
-#print((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
+# xd = "(xx, y, 'mazen and me', 'me', '55', '52', '53', 'youtube.com')"
+# dataInsert((str(xx), y, 'XDDDDD', 'me', '55', '52', '53', 'youtube.com'))
+# print((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
+
+
