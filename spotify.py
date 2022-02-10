@@ -114,9 +114,9 @@ def main():
 
     while(True):
         listining_info = current_track(token)
-        pprint(listining_info, indent=4)
-
-        if(listining_info != 0):  # if data is available
+        #pprint(listining_info, indent=4)
+        print(listining_info)
+        if(listining_info == 200 and not(listining_info.get('is_playing'))):  # if data is available
             repeat = True
             lastSongDB = pythonSQL.lastRow()
             lastID = lastSongDB[0]
