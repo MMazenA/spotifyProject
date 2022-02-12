@@ -36,7 +36,7 @@ def makeTable(name):
             pic_link text
             );"""
 
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, check_same_thread=False)
 
     create_table(conn, sql_create_total_play_time)
     create_table(conn, sql_create_current_tracker)
@@ -55,7 +55,7 @@ def dataInsert(x):
     '''
     # conn = sqlite3.connect("Table.db")
     database = r"Table.db"
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, check_same_thread=False)
     with conn:
         # print(conn)
         cur = conn.cursor()
@@ -67,7 +67,7 @@ def dataInsert(x):
 
 def lastRow():
     database = r"Table.db"
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database, check_same_thread=False)
     with conn:
         sql = '''select *from current ORDER BY rowid DESC LIMIT 1'''
         cur = conn.cursor()

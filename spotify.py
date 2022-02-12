@@ -4,7 +4,6 @@ from os import access
 from platform import python_branch
 from re import S
 from timeit import repeat
-from turtle import position
 from urllib import response
 import requests
 from pprint import pprint
@@ -63,15 +62,20 @@ def current_track(access_token):
         }
     )
     print(response)
-    resp_json = response.json()
-   # response = Str(response)
-    # print(response.status_code)
-    # print(type(response))
-    # print(token)
-    if(response.status_code != 200):
 
+    if(response.status_code == 401):
+        print("Authorization code expired retriving new token")
         token = getAccessToken()
         return 0
+    elif(response.status_code == 204):
+        print("Connection made, Nothing is playing")
+        return 1
+
+    resp_json = response.json()
+# response = Str(response)
+# print(response.status_code)
+# print(type(response))
+# print(token)
 
     if(resp_json['currently_playing_type'] == 'track'):
         track_id = resp_json['item']['id']
@@ -102,7 +106,7 @@ def current_track(access_token):
             # "% complete":percent_complete
         }
     else:
-        return 'Non-Track Playing?'
+        return '1'
     return current_track_info
 
 
@@ -114,14 +118,25 @@ def main():
 
     while(True):
         listining_info = current_track(token)
-        #pprint(listining_info, indent=4)
         print(listining_info)
-        if(listining_info == 200 and not(listining_info.get('is_playing'))):  # if data is available
+        sleepTimer = 0
+
+        if(listining_info == 1):
+            sleepTimer = 29
+
+        # pprint(listining_info, indent=4)
+        if(listining_info != 0 and listining_info != 1):  # if data is available
+
+            sleepTimer = 5
+            if(not listining_info.get('is_playing')):
+                sleepTimer = 25
+
             repeat = True
             lastSongDB = pythonSQL.lastRow()
             lastID = lastSongDB[0]
             lastCount = lastSongDB[5]
             count = 0
+
             if(lastID != listining_info.get('id')):
                 print("different song playing now")
                 countPrevent = True
@@ -152,8 +167,9 @@ def main():
             pythonSQL.dataInsert((payload))
             # count = 0
             time.sleep(5)
+        time.sleep(sleepTimer)
 
-        # sql stuff
+    # sql stuff
 
     return listining_info
 
