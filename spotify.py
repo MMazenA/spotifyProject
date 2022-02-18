@@ -115,58 +115,63 @@ def main():
     global token
     token = 0
     countPrevent = True
+    sleepTimer = 25
 
     while(True):
-        listining_info = current_track(token)
-        print(listining_info)
-        sleepTimer = 0
+        try:
+            listining_info = current_track(token)
+            print(listining_info)
+            sleepTimer = 0
 
-        if(listining_info == 1):
-            sleepTimer = 29
+            if(listining_info == 1):
+                sleepTimer = 29
 
-        # pprint(listining_info, indent=4)
-        if(listining_info != 0 and listining_info != 1):  # if data is available
+            # pprint(listining_info, indent=4)
+            if(listining_info != 0 and listining_info != 1):  # if data is available
 
-            sleepTimer = 5
-            if(not listining_info.get('is_playing')):
-                sleepTimer = 25
+                sleepTimer = 5
+                if(not listining_info.get('is_playing')):
+                    sleepTimer = 25
 
-            repeat = True
-            lastSongDB = pythonSQL.lastRow()
-            lastID = lastSongDB[0]
-            lastCount = lastSongDB[5]
-            count = 0
+                repeat = True
+                lastSongDB = pythonSQL.lastRow()
+                lastID = lastSongDB[0]
+                lastCount = lastSongDB[5]
+                count = 0
 
-            if(lastID != listining_info.get('id')):
-                print("different song playing now")
-                countPrevent = True
+                if(lastID != listining_info.get('id')):
+                    print("different song playing now")
+                    countPrevent = True
 
-            # accounts for songs on repeat
-            if(lastID == listining_info.get('id') and not countPrevent and listining_info.get('position') < 30000):
-                countPrevent = True
-                print('Repeating')
+                # accounts for songs on repeat
+                if(lastID == listining_info.get('id') and not countPrevent and listining_info.get('position') < 30000):
+                    countPrevent = True
+                    print('Repeating')
 
-            if(lastID == listining_info.get('id') and listining_info.get('position') > 30000 and countPrevent):
-                print("Adding 1 to count")
-                count = int(lastCount)
-                count += 1
-                countPrevent = False
-                repeat = False
-            elif(lastID == listining_info.get('id') and repeat):
-                count = lastCount
+                if(lastID == listining_info.get('id') and listining_info.get('position') > 30000 and countPrevent):
+                    print("Adding 1 to count")
+                    count = int(lastCount)
+                    count += 1
+                    countPrevent = False
+                    repeat = False
+                elif(lastID == listining_info.get('id') and repeat):
+                    count = lastCount
 
-            payload = (str(listining_info.get('id')),
-                       str(listining_info.get('name')),
-                       str(listining_info.get('artists')),
-                       str(listining_info.get('main_artist')),
-                       str(listining_info.get('length')),
-                       int(count),
-                       str(listining_info.get('position')),
-                       str(listining_info.get('picture')))
-            # print(payload)
-            pythonSQL.dataInsert((payload))
-            # count = 0
-            time.sleep(5)
+                payload = (str(listining_info.get('id')),
+                           str(listining_info.get('name')),
+                           str(listining_info.get('artists')),
+                           str(listining_info.get('main_artist')),
+                           str(listining_info.get('length')),
+                           int(count),
+                           str(listining_info.get('position')),
+                           str(listining_info.get('picture')))
+                # print(payload)
+                pythonSQL.dataInsert((payload))
+                # count = 0
+                time.sleep(5)
+        except:
+            print("Reponse not working")
+            time.sleep(29)
         time.sleep(sleepTimer)
 
     # sql stuff
