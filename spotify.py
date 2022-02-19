@@ -1,14 +1,5 @@
-
-from ast import Str
-from os import access
-from platform import python_branch
-from re import S
-from timeit import repeat
-from urllib import response
 import requests
-from pprint import pprint
 import base64
-from urllib.parse import urlencode
 import time
 import privateInfo  # file containing client codes
 import pythonSQL
