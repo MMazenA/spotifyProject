@@ -34,13 +34,14 @@ def getAccessToken():
     resp_json = r.json()
     # print(resp_json)           #prints token ,type,scope
     requested_access_token = resp_json['access_token']
-    # print(r.json())
-    # print(requested_access_token)
-
     return requested_access_token
 
 
 def current_track(access_token):
+    import time  # dont know why but exception is raised without this for current time
+    localt = time.localtime()
+    time_string = time.strftime("<%m/%d/%Y, %H:%M:%S>", localt)
+
     global token
     if(token == 0):
         token = getAccessToken()
@@ -52,7 +53,9 @@ def current_track(access_token):
             "Authorization": f"Bearer {access_token}"
         }
     )
-    print(response)
+
+    print()
+    print(time_string, response)
 
     if(response.status_code == 401):
         print("Authorization code expired retriving new token")
@@ -78,7 +81,7 @@ def current_track(access_token):
         position = resp_json['progress_ms']
         time[0] = (int((position/1000)/60))
         time[1] = (int((position/1000) % 60))
-        pic = resp_json['item']['album']['images'][0]['url']
+        pic = resp_json['item']['album']['images'][2]['url']
         playing = resp_json['is_playing']
         length = [0, 0]
         length_raw = (resp_json['item']["duration_ms"])
@@ -110,8 +113,10 @@ def main():
 
     while(True):
         try:
+
             listining_info = current_track(token)
             print(listining_info)
+
             sleepTimer = 0
 
             if(listining_info == 1):
@@ -157,12 +162,15 @@ def main():
                            str(listining_info.get('position')),
                            str(listining_info.get('picture')))
                 # print(payload)
+
                 pythonSQL.dataInsert((payload))
                 # count = 0
-                time.sleep(5)
+
+            time.sleep(5)
         except:
             print("Reponse not working")
             time.sleep(29)
+
         time.sleep(sleepTimer)
 
     # sql stuff
