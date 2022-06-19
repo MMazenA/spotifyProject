@@ -71,7 +71,7 @@ def current_track(access_token):
 # response = Str(response)
 # print(response.status_code)
 # print(type(response))
-# print(token)asdsadas
+# print(token)
 
     if(resp_json['currently_playing_type'] == 'track'):
         track_id = resp_json['item']['id']
@@ -135,6 +135,7 @@ def main():
                 lastSongDB = sqlFunc.lastRow()
                 lastID = lastSongDB[0]
                 lastCount = lastSongDB[5]
+                lastRowID = lastSongDB[8]
                 count = 0
 
                 if(lastID != listining_info.get('id')):
@@ -164,6 +165,10 @@ def main():
                            str(listining_info.get('position')),
                            str(listining_info.get('picture')))
                 # print(payload)
+                if(lastID != payload[0]):
+                    lastRowID = lastRowID+1
+                payload = payload+(lastRowID,)
+                print("LAST ROW: ",lastRowID)
                 sqlFunc.dataInsert((payload))
                 # count = 0
 
