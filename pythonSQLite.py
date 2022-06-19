@@ -75,6 +75,4 @@ def lastRow():
         last_row = cur.fetchone()
         return last_row
 
-# xd = "(xx, y, 'mazen and me', 'me', '55', '52', '53', 'youtube.com')"
-# dataInsert((str(xx), y, 'XDDDDD', 'me', '55', '52', '53', 'youtube.com'))
-# print((123, 'lol', 'mazen and me', 'me', '55', '52', '53', 'youtube.com'))
+
