@@ -3,6 +3,7 @@ import base64
 import time
 import privateInfo  # file containing client codes
 import pythonSQL
+import sqlFunc
 
 
 def getAccessToken():
@@ -29,10 +30,11 @@ def getAccessToken():
         "Authorization": f"Basic {client_creds_b64.decode()}"
     }
 
+    #r = requests.post(url)
     r = requests.post(token_url, data=token_data_refresh,
                       headers=token_headers)
     resp_json = r.json()
-    # print(resp_json)           #prints token ,type,scope
+    # print(resp_json)  # prints token ,type,scope
     requested_access_token = resp_json['access_token']
     return requested_access_token
 
@@ -69,7 +71,7 @@ def current_track(access_token):
 # response = Str(response)
 # print(response.status_code)
 # print(type(response))
-# print(token)
+# print(token)asdsadas
 
     if(resp_json['currently_playing_type'] == 'track'):
         track_id = resp_json['item']['id']
@@ -81,7 +83,7 @@ def current_track(access_token):
         position = resp_json['progress_ms']
         time[0] = (int((position/1000)/60))
         time[1] = (int((position/1000) % 60))
-        pic = resp_json['item']['album']['images'][2]['url']
+        pic = resp_json['item']['album']['images'][0]['url']
         playing = resp_json['is_playing']
         length = [0, 0]
         length_raw = (resp_json['item']["duration_ms"])
@@ -130,7 +132,7 @@ def main():
                     sleepTimer = 25
 
                 repeat = True
-                lastSongDB = pythonSQL.lastRow()
+                lastSongDB = sqlFunc.lastRow()
                 lastID = lastSongDB[0]
                 lastCount = lastSongDB[5]
                 count = 0
@@ -162,8 +164,7 @@ def main():
                            str(listining_info.get('position')),
                            str(listining_info.get('picture')))
                 # print(payload)
-
-                pythonSQL.dataInsert((payload))
+                sqlFunc.dataInsert((payload))
                 # count = 0
 
             time.sleep(5)
