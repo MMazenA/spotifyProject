@@ -2,7 +2,6 @@ import requests
 import base64
 import time
 import privateInfo  # file containing client codes
-import pythonSQL
 import sqlFunc
 
 
@@ -167,9 +166,12 @@ def main():
                 # print(payload)
                 if(lastID != payload[0]):
                     lastRowID = lastRowID+1
+                    if(lastRowID%50==0):
+                        sqlFunc.resetRows()
                 payload = payload+(lastRowID,)
-                print("LAST ROW: ",lastRowID)
+                #print("LAST ROW: ", lastRowID)
                 sqlFunc.dataInsert((payload))
+                
                 # count = 0
 
             time.sleep(5)
