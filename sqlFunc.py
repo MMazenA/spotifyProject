@@ -1,16 +1,18 @@
-"""Requires mysql and privateInfo for authenticatio"""
+"""Requires mysql and privateInfo for authentication."""
 import mysql.connector
 import privateinfo
 
 
 def data_insert(payload):
-    """Inserts data into mySQL database."""
+    """Insert data into mySQL database."""
     # inserting for update counts [x,playcount,playtime]
     payload = payload+(payload[5],)+(payload[6],)+(payload[8],)
     sql = '''INSERT INTO `current`
-  (`song_id`, `song_name`, `artists`, `primary_artist`, `song_length`, `total_play_count`, `current_play_time`, `pic_link`,`rowid`) 
-  VALUES('%s',"%s","%s","%s",'%s','%s','%s',"%s","%s") 
-  ON DUPLICATE KEY UPDATE
+  (`song_id`, `song_name`, `artists`, `primary_artist`,
+  `song_length`, `total_play_count`, `current_play_time`,
+  `pic_link`,`rowid`)
+   VALUES('%s',"%s","%s","%s",'%s','%s','%s',"%s","%s")
+   ON DUPLICATE KEY UPDATE
   `total_play_count`='%s',
   `current_play_time`='%s',
   `rowid`='%s' ''' % (payload)
@@ -35,7 +37,7 @@ def data_insert(payload):
 
 
 def last_row():
-    """Retrive last row from database"""
+    """Retrive last row from database."""
     row = ""
     try:
         mydb = mysql.connector.connect(
