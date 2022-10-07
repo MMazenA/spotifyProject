@@ -1,0 +1,3 @@
+[console_scripts]
+spotifyTracker = spotifyTracker.__main__:main
+

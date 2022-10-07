@@ -1,0 +1,10 @@
+README.md
+setup.py
+spotifyTracker/__init__.py
+spotifyTracker/__main__.py
+spotifyTracker.egg-info/PKG-INFO
+spotifyTracker.egg-info/SOURCES.txt
+spotifyTracker.egg-info/dependency_links.txt
+spotifyTracker.egg-info/entry_points.txt
+spotifyTracker.egg-info/requires.txt
+spotifyTracker.egg-info/top_level.txt

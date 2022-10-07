@@ -1,25 +1,23 @@
-"""Requires mysql and privateInfo for authenticatio"""
 
 import mysql.connector
-import privateinfo
+import privateInfo
 
 
-def data_insert(payload):
-    """Inserts data into mySQL database."""
+def dataInsert(x):
     # inserting for update counts [x,playcount,playtime]
-    payload = payload+(payload[5],)+(payload[6],)+(payload[8],)
+    x = x+(x[5],)+(x[6],)+(x[8],)
     sql = '''INSERT INTO `current` 
   (`song_id`, `song_name`, `artists`, `primary_artist`, `song_length`, `total_play_count`, `current_play_time`, `pic_link`,`rowid`) 
   VALUES('%s',"%s","%s","%s",'%s','%s','%s',"%s","%s") 
   ON DUPLICATE KEY UPDATE
   `total_play_count`='%s',
   `current_play_time`='%s',
-  `rowid`='%s' ''' % (payload)
+  `rowid`='%s' ''' % (x)
     try:
         mydb = mysql.connector.connect(
-            host=privateinfo.sql_host(),
-            user=privateinfo.sql_user(),
-            password=privateinfo.sql_pass(),
+            host=privateInfo.sqlHost(),
+            user=privateInfo.sqlUser(),
+            password=privateInfo.sqlPass(),
             database="d"
         )
         cur = mydb.cursor()
@@ -29,19 +27,19 @@ def data_insert(payload):
         cur.execute(sql)
         mydb.commit()
     except:
-        print("Insert Error: Values: ", payload)
+        print("Insert Error: Values: ", x)
         print(sql)
     cur.close()
     mydb.close()
 
 
-def last_row():
+def lastRow():
     row = ""
     try:
         mydb = mysql.connector.connect(
-            host=privateinfo.sql_host(),
-            user=privateinfo.sql_user(),
-            password=privateinfo.sql_pass(),
+            host=privateInfo.sqlHost(),
+            user=privateInfo.sqlUser(),
+            password=privateInfo.sqlPass(),
             database="d"
         )
         cur = mydb.cursor()
@@ -52,7 +50,7 @@ def last_row():
     try:
         cur.execute(sql)
         row = cur.fetchone()
-        # print(row)
+        #print(row)
 
     except:
         print("ERROR: Unable to retrive last row")
@@ -62,20 +60,19 @@ def last_row():
     return row
 
 
-def reset_rows():
-    """Clean up row count."""
+def resetRows():
     row = ""
     try:
         mydb = mysql.connector.connect(
-            host=privateinfo.sqlHost(),
-            user=privateinfo.sqlUser(),
-            password=privateinfo.sqlPass(),
+            host=privateInfo.sqlHost(),
+            user=privateInfo.sqlUser(),
+            password=privateInfo.sqlPass(),
             database="d"
         )
         mydb2 = mysql.connector.connect(
-            host=privateinfo.sql_host(),
-            user=privateinfo.sql_user(),
-            password=privateinfo.sql_pass(),
+            host=privateInfo.sqlHost(),
+            user=privateInfo.sqlUser(),
+            password=privateInfo.sqlPass(),
             database="d"
         )
         cur = mydb.cursor()
@@ -89,7 +86,7 @@ def reset_rows():
         row = cur.fetchone()
         count = 0
 
-        while row is not None:
+        while(row != None):
             sql = """INSERT INTO `current` (`song_id`) VALUES ('%s') 
             ON DUPLICATE KEY UPDATE
             `rowid`='%s'""" % (row[0], count)

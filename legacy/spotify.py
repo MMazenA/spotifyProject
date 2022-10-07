@@ -33,7 +33,7 @@ def getAccessToken():
     r = requests.post(token_url, data=token_data_refresh,
                       headers=token_headers)
     resp_json = r.json()
-    # print(resp_json)  # prints token ,type,scope
+    # print(resp_json)  # prints token ,type,scope 
     requested_access_token = resp_json['access_token']
     return requested_access_token
 
