@@ -61,6 +61,5 @@ def last_row():
         cur = conn.cursor()
         cur.execute(sql)
         last_row_data = cur.fetchone()
-        print(last_row_data)
+        # print(last_row_data)
         return last_row_data
-
