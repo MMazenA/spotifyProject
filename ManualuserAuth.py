@@ -1,13 +1,12 @@
 from flask import Flask, redirect, request
 from urllib import request
 from hyperlink import URL
-import requests
-import privateInfo   # file containing client codes
+import privateinfo   # file containing client codes
 
 
 # client id and secret
-client_id = privateInfo.clientID()
-secret_id = privateInfo.secretID()
+client_id = privateinfo.client_id()
+secret_id = privateinfo.secret_id()
 
 
 # authentication URL
