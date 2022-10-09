@@ -53,8 +53,6 @@ class Sptfy:
             "Authorization": f"Basic {client_creds_b64.decode()}"
         }
 
-        # r = requests.post(url)
-
         try:
             req_post = requests.post(token_url, data=token_data_refresh,
                                      headers=token_headers, timeout=5)
@@ -109,21 +107,20 @@ class Sptfy:
             timeout=5
         )
 
-        print()
-        print(time_string, response)
+        # print()
+        # print(time_string, response, end="")  # end="" to add db server or loal
 
         if response.status_code == 401:
             print("Authorization code expired retriving new token")
             self.token = self.get_access_token()
-            return 0
+            return ["0", time_string, response]
         if response.status_code == 204:
             print("Connection made, Nothing is playing")
-            return 1
+            return ['1', time_string, response]
 
         resp_json = response.json()
 
         if resp_json['currently_playing_type'] == 'track':
-            # percent_complete=f"% {position*100/length_raw}"
             artists = resp_json['item']['artists']
             current_track_info = {
                 "id": resp_json['item']['id'],
@@ -134,8 +131,7 @@ class Sptfy:
                 "picture": resp_json['item']['album']['images'][0]['url'],
                 "is_playing": resp_json['is_playing'],
                 "main_artist": resp_json['item']['artists'][0]['name'],
-                # "% complete":percent_complete
             }
         else:
-            return '1'
-        return current_track_info
+            return ['1', time_string, response]
+        return [current_track_info, time_string, response]
