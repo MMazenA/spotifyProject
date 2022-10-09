@@ -33,5 +33,5 @@ def sql_host():
 
 
 def sql_db():
-    """Database for storage"""
+    """Server database for storage"""
     return ""
