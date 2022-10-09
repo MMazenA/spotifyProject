@@ -9,22 +9,31 @@ import pythonSQLite
 def main():
     """spotfiy tracker."""
     count_prevent = True
-    local = False
+    local = True  # decide to use sql or sqlite
+    last_id = 0
     if local:
-        pythonSQLite.create_table("tracker")
+        pythonSQLite.make_table("tracker")
     sleep_timer = 25
     tracker = sptfy.Sptfy(privateinfo.client_id(),
                           privateinfo.secret_id(),
                           privateinfo.refresh_token())
 
     while True:
-        listining_info = tracker.get_current_track()
-        print(listining_info)
+        listining_info, time_string, response = tracker.get_current_track()
+
+        if local:
+            database = "<Local>"
+        else:
+            database = "<Server>"
+
+        if listining_info == '1':
+            print("Non-song type is currently playing")
+
         sleep_timer = 0
-        if listining_info == 1:
+        if listining_info == '1':  # if current track is not a song
             sleep_timer = 29
         # pprint(listining_info, indent=4)
-        if listining_info not in (0, 1):  # if data is available
+        if listining_info not in ('0', '1'):  # if data is available
             sleep_timer = 5
             if not listining_info.get('is_playing'):
                 sleep_timer = 25
@@ -43,6 +52,9 @@ def main():
                 last_row_id = 0
             count = 0
             if last_id != listining_info.get('id'):
+                print()
+                print(time_string, response, database)
+                print(listining_info)
                 print("different song playing now")
                 count_prevent = True
             # accounts for songs on repeat
@@ -78,7 +90,8 @@ def main():
             # print("LAST ROW: ", last_row_id)
             if local:
                 pythonSQLite.data_insert((payload))
-            sqlFunc.data_insert((payload))
+            else:
+                sqlFunc.data_insert((payload))
             # count = 0
         time.sleep(sleep_timer)
 
