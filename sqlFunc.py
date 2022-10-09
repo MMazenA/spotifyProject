@@ -21,7 +21,8 @@ def data_insert(payload):
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
-            database=privateinfo.sql_db())
+            database=privateinfo.sql_db(),
+            connection_timeout=5)
         cur = mydb.cursor()
         try:
             cur.execute(sql)
@@ -40,11 +41,13 @@ def last_row():
     """Retrive last row from database."""
     row = ""
     try:
+
         mydb = mysql.connector.connect(
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
-            database=privateinfo.sql_db()
+            database=privateinfo.sql_db(),
+            connection_timeout=5
         )
         cur = mydb.cursor()
         try:
@@ -55,9 +58,11 @@ def last_row():
             mydb.close()
 
         except mysql.connector.Error as err1:
-            print("ERROR: Unable to retrive last row", err1)
+            raise Exception(
+                "ERROR: Unable to retrive last row", err1) from err1
+
     except mysql.connector.Error as err:
-        print("ERROR: Unable to connect to database", err)
+        raise Exception("ERROR: Unable to connect to database", err) from err
 
     return row
 
@@ -70,13 +75,15 @@ def reset_rows():
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
-            database=privateinfo.sql_db()
+            database=privateinfo.sql_db(),
+            connection_timeout=5
         )
         mydb2 = mysql.connector.connect(
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
-            database=privateinfo.sql_db()
+            database=privateinfo.sql_db(),
+            connection_timeout=5
         )
         cur = mydb.cursor()
         cur_edit = mydb2.cursor()
