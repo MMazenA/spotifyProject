@@ -49,7 +49,7 @@ def last_row():
             database=privateinfo.sql_db(),
             connection_timeout=5
         )
-        cur = mydb.cursor()
+        cur = mydb.cursor(dictionary=True)
         try:
             sql = "SELECT * FROM `current` ORDER BY rowid DESC LIMIT 1"
             cur.execute(sql)
@@ -112,3 +112,33 @@ def reset_rows():
             print(sql)
     except mysql.connector.Error as err:
         print("ERROR: Unable to connect to database", err)
+
+
+def locate(song_id):
+    """Retrive specific song id row from database."""
+    row = ""
+    try:
+
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5
+        )
+        cur = mydb.cursor(dictionary=True)
+        try:
+            sql = "SELECT * FROM `current` WHERE `song_id`='%s'" % song_id
+            cur.execute(sql)
+            row = cur.fetchone()
+            cur.close()
+            mydb.close()
+
+        except mysql.connector.Error as err1:
+            raise Exception(
+                "ERROR: Unable to retrive requested row", err1) from err1
+
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+
+    return row

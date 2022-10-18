@@ -36,14 +36,16 @@ def make_table(name):
 def data_insert(payload):
     """Inserts data into local database file using SQLite."""
 
-    sql = '''insert or replace into current(song_id,song_name,artists,primary_artist,
+    sql = """insert or replace into current(song_id,song_name,artists,primary_artist,
     song_length,total_play_count,current_play_time,pic_link,rowid)
     VALUES(?,?,?,?,?,?,?,?,?)
-    '''
+    """
     # conn = sqlite3.connect("Table.db")
     database = r"tracker.db"
     conn = sqlite3.connect(database, check_same_thread=False)
+
     with conn:
+
         # print(conn)
         cur = conn.cursor()
         cur.execute(sql, payload)
@@ -56,10 +58,11 @@ def last_row():
     """Retrive and return last row from database."""
     database = r"tracker.db"
     conn = sqlite3.connect(database, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+
     with conn:
-        sql = '''select *from current ORDER BY rowid DESC LIMIT 1'''
+        sql = """select *from current ORDER BY rowid DESC LIMIT 1"""
         cur = conn.cursor()
         cur.execute(sql)
         last_row_data = cur.fetchone()
-        # print(last_row_data)
-        return last_row_data
+        return dict(last_row_data)
