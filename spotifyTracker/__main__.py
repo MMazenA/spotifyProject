@@ -1,15 +1,21 @@
 """Uses time and sql or sqlite3. """
 import time
+import click
 import sqlFunc
 import sptfy
 import privateinfo
 import pythonSQLite
 
 
-def main():
-    """spotfiy tracker."""
+@click.command()
+@click.option('-l', "--local", metavar='BOOLEAN', help="Loal or server Output, defaults to server.")
+def main(local):
+    """Spotfiy tracker."""
     count_prevent = True
-    local = True  # decide to use sql or sqlite
+    if local == None:
+        local = False
+    else:
+        local = True
     last_id = 0
     if local:
         pythonSQLite.make_table("tracker")
@@ -43,9 +49,9 @@ def main():
             else:
                 last_song_db = sqlFunc.last_row()
             if last_song_db is not None:
-                last_id = last_song_db[0]
-                last_count = last_song_db[5]
-                last_row_id = last_song_db[8]
+                last_id = last_song_db['song_id']
+                last_count = last_song_db['total_play_count']
+                last_row_id = last_song_db['rowid']
             else:
                 last_id = 0
                 last_count = 0
