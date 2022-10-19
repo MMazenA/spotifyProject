@@ -35,6 +35,7 @@ def make_table(name):
 
 def data_insert(payload):
     """Inserts data into local database file using SQLite."""
+    payload = tuple(payload.values())
 
     sql = """insert or replace into current(song_id,song_name,artists,primary_artist,
     song_length,total_play_count,current_play_time,pic_link,rowid)
