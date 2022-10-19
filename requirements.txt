@@ -2,3 +2,6 @@ requests
 click
 setuptools
 mysql.connector
+Flask
+Flask-RESTful 
+Flask-Limiter
