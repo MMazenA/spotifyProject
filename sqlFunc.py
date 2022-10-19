@@ -5,9 +5,11 @@ import privateinfo
 
 def data_insert(payload):
     """Insert data into mySQL database."""
+    payload = list(payload.values())
     # inserting for update counts [x,playcount,playtime]
-    payload = payload+(payload[5],)+(payload[6],)+(payload[8],)
-    sql = '''INSERT INTO `current`
+    payload = payload + list((payload[5],) + (payload[6],) + (payload[8],))
+
+    sql = """INSERT INTO `current`
   (`song_id`, `song_name`, `artists`, `primary_artist`,
   `song_length`, `total_play_count`, `current_play_time`,
   `pic_link`,`rowid`)
@@ -15,14 +17,17 @@ def data_insert(payload):
    ON DUPLICATE KEY UPDATE
   `total_play_count`='%s',
   `current_play_time`='%s',
-  `rowid`='%s' ''' % (payload)
+  `rowid`='%s' """ % (
+        tuple(payload)
+    )
     try:
         mydb = mysql.connector.connect(
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
             database=privateinfo.sql_db(),
-            connection_timeout=5)
+            connection_timeout=5,
+        )
         cur = mydb.cursor()
         try:
             cur.execute(sql)
@@ -47,7 +52,7 @@ def last_row():
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
             database=privateinfo.sql_db(),
-            connection_timeout=5
+            connection_timeout=5,
         )
         cur = mydb.cursor(dictionary=True)
         try:
@@ -58,12 +63,10 @@ def last_row():
             mydb.close()
 
         except mysql.connector.Error as err1:
-            raise Exception(
-                "ERROR: Unable to retrive last row", err1) from err1
+            raise Exception("ERROR: Unable to retrive last row", err1) from err1
 
     except mysql.connector.Error as err:
         raise Exception("ERROR: Unable to connect to database", err) from err
-
     return row
 
 
@@ -76,14 +79,14 @@ def reset_rows():
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
             database=privateinfo.sql_db(),
-            connection_timeout=5
+            connection_timeout=5,
         )
         mydb2 = mysql.connector.connect(
             host=privateinfo.sql_host(),
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
             database=privateinfo.sql_db(),
-            connection_timeout=5
+            connection_timeout=5,
         )
         cur = mydb.cursor()
         cur_edit = mydb2.cursor()
@@ -97,10 +100,13 @@ def reset_rows():
             while row is not None:
                 sql = """INSERT INTO `current` (`song_id`) VALUES ('%s')
                 ON DUPLICATE KEY UPDATE
-                `rowid`='%s'""" % (row[0], count)
+                `rowid`='%s'""" % (
+                    row[0],
+                    count,
+                )
                 cur_edit.execute(sql)
                 mydb2.commit()
-                count = count+1
+                count = count + 1
                 row = cur.fetchone()
                 cur.close()
                 mydb.close()
@@ -124,7 +130,7 @@ def locate(song_id):
             user=privateinfo.sql_user(),
             password=privateinfo.sql_pass(),
             database=privateinfo.sql_db(),
-            connection_timeout=5
+            connection_timeout=5,
         )
         cur = mydb.cursor(dictionary=True)
         try:
@@ -135,8 +141,7 @@ def locate(song_id):
             mydb.close()
 
         except mysql.connector.Error as err1:
-            raise Exception(
-                "ERROR: Unable to retrive requested row", err1) from err1
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
 
     except mysql.connector.Error as err:
         raise Exception("ERROR: Unable to connect to database", err) from err
