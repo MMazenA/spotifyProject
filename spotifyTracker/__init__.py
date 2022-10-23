@@ -1,1 +1,1 @@
-"""A spotify song tracker"""
+"""A spotify song tracker."""
