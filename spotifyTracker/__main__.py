@@ -1,6 +1,6 @@
-"""Uses time and sql or sqlite3. """
+#!/usr/bin/python3
+"""Uses time and sql or sqlite3."""
 import time
-from urllib import request
 import requests
 import click
 import sptfy
@@ -56,7 +56,7 @@ def main(local):
             else:
                 last_song_db = requests.get(
                     privateinfo.api_host() + "/sptfy_server/", timeout=5
-                ).json()
+                ).json()["data"]
 
             if last_song_db is not None:
                 last_id = last_song_db["song_id"]
@@ -129,4 +129,4 @@ def main(local):
 
 
 if __name__ == "__main__":
-    main(False)
+    main()
