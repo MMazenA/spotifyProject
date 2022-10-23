@@ -7,3 +7,4 @@ env/
 testing/
 tracker.db
 logs/
+spotifyTracker.egg-info
