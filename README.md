@@ -9,4 +9,4 @@ A full stack project using python to devolop devolop an application to record an
 
 
 
-![Interaction UML Diagram](https://drive.google.com/file/d/1d9t2Gw6QXRYHpUAaQxDoO3WlQTKqm60v/view?usp=sharing)
+![Interaction UML Diagram](https://lh3.googleusercontent.com/drive-viewer/AJc5JmTHyNXfCY1RM9MVtIbSTFBq8UOq-4t713W5_mJrSmQIkmgvscuoCl5d_2KXdxetgi4HraoapuQ=w1832-h1296)
