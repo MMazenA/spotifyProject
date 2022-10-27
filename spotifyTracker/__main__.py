@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Uses time and sql or sqlite3."""
+"""Uses constant probing to identifty song changes and record them into databse via api."""
 import time
 import requests
 import click
