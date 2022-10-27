@@ -50,7 +50,7 @@ def main(local):
                 sleep_timer = 25
             repeat = True
             if local:
-                last_song_db = last_song_db = requests.get(
+                last_song_db = requests.get(
                     privateinfo.api_host() + "/sptfy_local/", timeout=5
                 ).json()
             else:
