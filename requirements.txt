@@ -5,3 +5,5 @@ mysql.connector
 Flask
 Flask-RESTful 
 Flask-Limiter
+flask_sse
+Flask-WTF
