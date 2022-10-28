@@ -4,7 +4,7 @@ WIP
 
 A full stack project using python to devolop devolop an application to record and present my listening information from spotify. 
 
-Currently being hosted on [Tracker](https://www.mazenmirza.com)
+Currently being hosted [here](https://www.mazenmirza.com)
 
 I am still building the front end and learning react,js, and css animation to add to it. 
 
