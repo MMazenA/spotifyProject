@@ -1,6 +1,7 @@
 # spotifyProject
 
 WIP
+Inspo from [gabehassan.com](https://gabehassan.com)
 
 A full stack project using python to devolop devolop an application to record and present my listening information from spotify. 
 
