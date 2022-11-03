@@ -36,8 +36,13 @@ def main(local):
             database = "<Local>"
         else:
             database = "<Server>"
+        while listining_info == "408":
+            print("Connection timeout, attempting to reconnect")
+            time.sleep(30)
+            listining_info, time_string, response = tracker.get_current_track()
 
         if listining_info == "1":
+            print(time_string)
             print("Non-song type is currently playing")
 
         sleep_timer = 0
@@ -110,7 +115,6 @@ def main(local):
                 # sqlFunc.reset_rows()
             payload["row_id"] = last_row_id
             if local:
-
                 requests.post(
                     privateinfo.api_host() + "/sptfy_local/",
                     headers={"Content-Type": "application/json; charset=utf-8"},
@@ -129,4 +133,4 @@ def main(local):
 
 
 if __name__ == "__main__":
-    main()
+    main(False)

@@ -78,6 +78,9 @@ class Sptfy:
         except requests.exceptions.ConnectTimeout as err:
             print("get_access_token Error: Cannot connect \n", err)
             return 408
+        except requests.exceptions.ConnectionError as err:
+            print("get_access_token Error: Cannot connect \n", err)
+            return 408
         resp_json = req_post.json()
         requested_access_token = resp_json["access_token"]
         return requested_access_token
@@ -90,12 +93,18 @@ class Sptfy:
         if self.token == 0:
             self.token = self.get_access_token()
 
-        current_track_url = "https://api.spotify.com/v1/me/player"
-        response = requests.get(
-            current_track_url,
-            headers={"Authorization": f"Bearer {self.token}"},
-            timeout=5,
-        )
+        try:
+            current_track_url = "https://api.spotify.com/v1/me/player"
+            response = requests.get(
+                current_track_url,
+                headers={"Authorization": f"Bearer {self.token}"},
+                timeout=5,
+            )
+        except requests.exceptions.ReadTimeout as timeout:
+            return ["408", time_string, 408]
+        except requests.exceptions.ConnectionError as err:
+            print("Error: Cannot connect \n", err)
+            return ["408", time_string, 408]
 
         # print()
         # print(time_string, response, end="")  # end="" to add db server or loal
@@ -105,12 +114,16 @@ class Sptfy:
             self.token = self.get_access_token()
             return ["0", time_string, response]
         if response.status_code == 204:
-            print("Connection made, Nothing is playing")
+            # print("Connection made, Nothing is playing")
             return ["1", time_string, response]
 
         resp_json = response.json()
 
-        if resp_json["currently_playing_type"] == "track":
+        if (
+            "currently_playing_type" in resp_json
+            and resp_json["currently_playing_type"] == "track"
+            and resp_json["item"]["is_local"] == False
+        ):
             artists = resp_json["item"]["artists"]
             current_track_info = {
                 "id": resp_json["item"]["id"],
