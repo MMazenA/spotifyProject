@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="/ima ges/favicon.ico">
+</head>
+
+<body>
+    <div class="center-screen">
+        <div id="song_name_div" class="center-screen2"></div>
+        <div id="image_div"></div>
+
+    </div>
+    <!--
+    <input type="checkbox" data-animation-pause id="css-toggle" class="hidden" />
+    <label for="css-toggle" class="chk">Toggle animations</label>
+    <div class="circle a-slide" data-animation="stop"></div>
+    -->
+</body>
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var image_div = document.getElementById("image_div");
+    var song_name_div = document.getElementById("song_name_div");
+
+    var eventSource = new EventSource("/stream");
+    eventSource.onmessage = function (e) {
+        image_div.innerHTML = "<img src='" + JSON.parse(e.data).pic_link + "'/>";
+        song_name_div.innerHTML = "<p>" + "<font size=\"+2\"> <strong>" + JSON.parse(e.data).song_name + "</strong></font></p><p>" + JSON.parse(e.data).primary_artist + "</p>"
+
+    };
+</script>
+
+
+</html>

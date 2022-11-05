@@ -1,0 +1,109 @@
+.center-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 90vh
+}
+
+.center-screen2 {
+  color: #ffffff;
+  padding-right: 10%;
+  font-size: 150%;
+}
+
+body {
+  background-color: #0e0e0e;
+
+}
+
+.chk {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  user-select: none;
+}
+
+.chk::before {
+  --ico-check: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M14 2.5l-8.5 8.5-3.5-3.5-1.5 1.5 5 5 10-10z" fill="white"></path></svg>');
+  background: silver var(--ico-check) center center/70% no-repeat;
+  border-radius: 0.25rem;
+  display: inline-block;
+  content: '';
+  height: 1.25rem;
+  margin-inline-end: 0.25rem;
+  width: 1.25rem;
+}
+
+.hidden {
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(1px);
+  display: block;
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.circle {
+  --bgc: cornflowerblue;
+  --w: 50px;
+  align-items: center;
+  background-color: var(--bgc);
+  border-radius: 50%;
+  color: #FFF;
+  display: flex;
+  height: var(--w);
+  justify-content: center;
+  margin-bottom: 1rem;
+  width: var(--w);
+}
+
+
+
+.a-slide {
+  --animdur: 10s;
+  --animn: slide;
+}
+
+[data-animation] {
+  animation: var(--animn, none) var(--animdur, 0s) var(--animtf, linear) var(--animdel, 0s) var(--animic, infinite) var(--animdir, alternate) var(--animfm, none) var(--animps, running);
+}
+
+/* STATE */
+[data-animation-pause]:checked~[data-animation] {
+  --animps: paused;
+}
+
+[data-animation-pause]:checked+label::before {
+  background-color: cornflowerblue;
+}
+
+/* KEYFRAMES */
+@keyframes opacity {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+
+
+@keyframes slide {
+  from {
+    margin-left: 20%;
+  }
+
+  to {
+    margin-left: calc(80% - var(--w, 150px));
+  }
+}

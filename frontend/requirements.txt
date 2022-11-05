@@ -1,0 +1,10 @@
+requests
+click
+setuptools
+mysql.connector
+Flask
+Flask-RESTful 
+Flask-Limiter
+flask_sse
+waitress
+Flask-WTF
