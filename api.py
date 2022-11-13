@@ -2,7 +2,7 @@
 """Api for database interaction."""
 
 from flask import Flask
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, request
 
 # from flask_limiter import Limiter
 # from flask_limiter.util import get_remote_address
@@ -15,7 +15,6 @@ app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
-# limiter = Limiter(app, key_func=get_remote_address)
 
 
 song_post_args = reqparse.RequestParser()
@@ -31,7 +30,6 @@ song_post_args.add_argument("row_id", type=int, help="Row ID")
 
 
 class SptfyServer(Resource):
-    # decorators = [limiter.limit("60/minute")]
     """Spotify Server endpoint for insertion and retrival."""
 
     def get(self):
@@ -46,6 +44,15 @@ class SptfyServer(Resource):
         return {"Status": "Sucess"}
 
 
+class locateSong(Resource):
+    """Spotify Server endpoint for locating a specific song"""
+
+    def get(self):
+        """Method to return data from cloud sql database."""
+        args = request.args
+        return sqlFunc.locate(args["song_id"])
+
+
 class SptfyLocal(Resource):
     """Spotify Local endpoint for insertion and retrival."""
 
@@ -57,13 +64,13 @@ class SptfyLocal(Resource):
         """Method to insert into local database."""
 
         args = song_post_args.parse_args()
-
         pythonSQLite.data_insert(args)
         return {"Status": "Sucess"}
 
 
 api.add_resource(SptfyServer, "/sptfy_server/")
 api.add_resource(SptfyLocal, "/sptfy_local/")
+api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
 
 
 if __name__ == "__main__":

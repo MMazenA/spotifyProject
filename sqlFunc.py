@@ -147,3 +147,6 @@ def locate(song_id):
         raise Exception("ERROR: Unable to connect to database", err) from err
 
     return row
+
+
+

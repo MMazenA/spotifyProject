@@ -68,15 +68,29 @@ def main(local):
                 last_count = last_song_db["total_play_count"]
                 last_row_id = last_song_db["rowid"]
             else:
+                print("what does this do here")
                 last_id = 0
                 last_count = 0
                 last_row_id = 0
-            count = 0
+            # count = 0
             if last_id != listining_info.get("id"):
                 print()
                 print(time_string, response, database)
                 print(listining_info)
                 print("different song playing now")
+                locateSong = requests.get(
+                    privateinfo.api_host()
+                    + "/locate_song/"
+                    + "?song_id="
+                    + listining_info.get("id"),
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                    timeout=5,
+                ).json()
+                if locateSong is not None:
+                    count = locateSong["total_play_count"]
+                else:
+                    count = 0
+
                 count_prevent = True
             # accounts for songs on repeat
             if (
@@ -122,6 +136,7 @@ def main(local):
                     timeout=5,
                 )
             else:
+                # print(payload)
                 requests.post(
                     privateinfo.api_host() + "/sptfy_server/",
                     headers={"Content-Type": "application/json; charset=utf-8"},
