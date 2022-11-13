@@ -1,6 +1,5 @@
 from flask import Flask, redirect, request
 from urllib import request
-from hyperlink import URL
 import privateinfo   # file containing client codes
 
 
@@ -15,7 +14,6 @@ userauthenticate = (
     '&client_id='+client_id +
     "&scope=user-read-currently-playing%20user-read-playback-state%20user-read-playback-position"
     "&redirect_uri=http://127.0.0.1:5000/home/"
-
 )
 
 
