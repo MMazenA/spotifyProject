@@ -1,6 +1,7 @@
 """Requires mysql and privateInfo for authentication."""
 import mysql.connector
 import privateinfo
+import numpy as np
 
 
 def data_insert(payload):
@@ -149,4 +150,33 @@ def locate(song_id):
     return row
 
 
+def top_ten():
+    """Get top 10 most played tracks."""
+    row = ""
+    try:
 
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        cur = mydb.cursor(dictionary=True, buffered=True)
+        try:
+            sql = "SELECT * FROM `current` ORDER BY `current`.`total_play_count` DESC LIMIT 10;"
+            cur.execute(sql)
+            row = cur.fetchall()
+            cur.close()
+            mydb.close()
+
+            row = np.array(row)
+            numbered_dict = dict(enumerate(row.flatten(), 1))
+
+        except mysql.connector.Error as err1:
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
+
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+
+    return numbered_dict

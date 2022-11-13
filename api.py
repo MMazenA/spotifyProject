@@ -45,12 +45,20 @@ class SptfyServer(Resource):
 
 
 class locateSong(Resource):
-    """Spotify Server endpoint for locating a specific song"""
+    """Spotify Server endpoint for locating a specific song."""
 
     def get(self):
         """Method to return data from cloud sql database."""
         args = request.args
         return sqlFunc.locate(args["song_id"])
+
+
+class top_ten(Resource):
+    """End point that returns top 10 most listened to songs."""
+
+    def get(self):
+        """Method to return data from cloud sql database."""
+        return sqlFunc.top_ten()
 
 
 class SptfyLocal(Resource):
@@ -71,6 +79,7 @@ class SptfyLocal(Resource):
 api.add_resource(SptfyServer, "/sptfy_server/")
 api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
+api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 
 
 if __name__ == "__main__":
