@@ -12,13 +12,13 @@
         <div id="image_div"></div>
 
     </div>
-    <!--
-    <input type="checkbox" data-animation-pause id="css-toggle" class="hidden" />
-    <label for="css-toggle" class="chk">Toggle animations</label>
-    <div class="circle a-slide" data-animation="stop"></div>
-    -->
-</body>
 
+    <footer>
+        <div id="top-ten">
+        </div>
+    </footer>
+
+</body>
 
 
 
@@ -28,6 +28,54 @@
 <script type="text/javascript">
     var image_div = document.getElementById("image_div");
     var song_name_div = document.getElementById("song_name_div");
+    var top_ten = document.getElementById("top-ten")
+
+    var eventSource = new EventSource("/stream2");
+    eventSource.onmessage = function (e) {
+        try {
+            var data = JSON.parse(e.data)
+            top_ten.innerHTML = "<font size=\"+2\"> <strong> <div class=\"row\">" +
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[1].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[1].song_name + "<br>" + data[1].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[2].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[2].song_name + "<br>" + data[2].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[3].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[3].song_name + "<br>" + data[3].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[4].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[4].song_name + "<br>" + data[4].total_play_count + "</p></div>" +
+
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[5].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[5].song_name + "<br>" + data[5].total_play_count + "</p></div>" +
+                "</div>" +
+
+                "<div class=\"row\">" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[6].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[6].song_name + "<br>" + data[6].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[7].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[7].song_name + "<br>" + data[7].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[8].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[8].song_name + "<br>" + data[8].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[9].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[9].song_name + "<br>" + data[9].total_play_count + "</p></div>" +
+
+                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[10].pic_link + "  style=\"width:100%;\"></div>" +
+                "<p>" + data[10].song_name + "<br>" + data[10].total_play_count + "</p></div>" +
+
+                "</div></strong></font>"
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
 
     var eventSource = new EventSource("/stream");
     eventSource.onmessage = function (e) {
@@ -35,6 +83,8 @@
         song_name_div.innerHTML = "<p>" + "<font size=\"+2\"> <strong>" + JSON.parse(e.data).song_name + "</strong></font></p><p>" + JSON.parse(e.data).primary_artist + "</p>"
 
     };
+
+
 </script>
 
 

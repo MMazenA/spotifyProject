@@ -29,13 +29,6 @@ def get_time():
 @app.route("/")
 def root():
     r = make_response(render_template("index.html"))
-    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-    r.headers.setlist(
-        "Content-Security-Policy",
-        [
-            "default-src 'self'; script-src 'sha256-D0pKvLMu/bBfyzT+RSj104BOWXx1OdB4vy2XmKMjnRc='; img-src https://i.scdn.co/"
-        ],
-    )
 
     r.headers.set("X-Content-Type-Options", "nosniff")
     r.headers.set("X-Content-Type-Options", "nosniff")
@@ -88,6 +81,41 @@ def stream():
             data = requests.get(
                 "http://localhost:9888" + "/sptfy_server/", timeout=5
             ).json()["data"]
+            # formating because requests.json was turning keys into single quotes
+            data = "data: {}\n\n".format(json.dumps(data))
+            # data = data.replace("'", '"')
+            yield data
+
+    return Response(
+        eventStream(),
+        mimetype="text/event-stream",
+        headers={
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "Content-Security-Policy": "default-src self",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "SAMEORIGIN",
+            "X-XSS-Protection": "1; mode=block",
+            "Access-Control-Allow-Methods": "GET",
+        },
+    )
+
+
+@app.route("/stream2")
+def stream2():
+    def eventStream():
+        fast_load = True
+        while True:
+            if fast_load:
+                time.sleep(0.1)
+            else:
+                time.sleep(3600)
+            fast_load = False
+            data = requests.get(
+                "http://localhost:9888/" + "/top_ten/", timeout=5
+            ).json()
             # formating because requests.json was turning keys into single quotes
             data = "data: {}\n\n".format(json.dumps(data))
             # data = data.replace("'", '"')
