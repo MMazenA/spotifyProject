@@ -29,6 +29,13 @@ def get_time():
 @app.route("/")
 def root():
     r = make_response(render_template("index.html"))
+    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    r.headers.setlist(
+        "Content-Security-Policy",
+        [
+            "default-src 'self'; script-src 'sha256-EHMV7b16sHNZSdWegZseXFOwGY0Haipo0RHHEVbFKL0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"
+        ],
+    )
 
     r.headers.set("X-Content-Type-Options", "nosniff")
     r.headers.set("X-Content-Type-Options", "nosniff")
@@ -143,7 +150,7 @@ def callback():
     userauthenticate = (
         "response_type=code"
         + "&client_id="
-        + "client_id"
+        + "aa1826bc005040e98502bf7d9e6d5ba2"
         + "&scope=user-read-currently-playing%20user-read-playback-state%20user-read-playback-position"
         "&redirect_uri=https://mazenmirza.com/code/"
     )
