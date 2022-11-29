@@ -33,7 +33,7 @@ def root():
     r.headers.setlist(
         "Content-Security-Policy",
         [
-            "default-src 'self'; script-src 'sha256-PThVRB7Gn/ozJ1irDCJBpLuQOdV+OoWSYveBcVaFOLw='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"
+            "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"
         ],
     )
 
