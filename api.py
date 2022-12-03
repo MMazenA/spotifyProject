@@ -101,7 +101,7 @@ class NewUser(Resource):
             token = req_post.json()["access_token"]
 
         except:
-            return 408
+            return {"Status": "408"}
 
         try:
             # token = "BQCVfFjke6nhqIJJNRY3Kw9E79hLjB4AjYqG_8cljL4d2-gzGg7kse8oLob1tC7L4o9gJw8HAbNELpkLyG8p1egK3Z5w3GOfwKYQuXldGT85B9IFPUMS3Q63oP68AFmIqn7a0zuYFK2oHC0qINtVVCybJIDkl0TMVwIfZwruL7K4KbiXHFMZmkHoayXUskQ"
