@@ -1,14 +1,19 @@
 #!/usr/bin/python3
 """Api for database interaction."""
 
+import base64
+import json
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, request
+import requests
+
 
 # from flask_limiter import Limiter
 # from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 import sqlFunc
 import pythonSQLite
+import privateinfo
 
 
 app = Flask(__name__)
@@ -76,10 +81,60 @@ class SptfyLocal(Resource):
         return {"Status": "Sucess"}
 
 
+class NewUser(Resource):
+    """Endpoint for new users to create an account"""
+
+    def post(self):
+        token_url = "https://accounts.spotify.com/api/token"
+        token_data_code = {
+            "grant_type": "authorization_code",
+            "code": request.args["code"],
+            "redirect_uri": "https://mazenmirza.com/code/",
+        }
+        client_creds = f"{privateinfo.client_id()}:{privateinfo.secret_id()}"
+        client_creds_b64 = base64.b64encode(client_creds.encode())
+        token_headers = {"Authorization": f"Basic {client_creds_b64.decode()}"}
+        try:
+            req_post = requests.post(
+                token_url, data=token_data_code, headers=token_headers, timeout=5
+            )
+            token = req_post.json()["access_token"]
+            print(req_post)
+            print(req_post.json())
+
+            print(token)
+        except:
+            print("idk")
+
+        try:
+            # token = "BQCVfFjke6nhqIJJNRY3Kw9E79hLjB4AjYqG_8cljL4d2-gzGg7kse8oLob1tC7L4o9gJw8HAbNELpkLyG8p1egK3Z5w3GOfwKYQuXldGT85B9IFPUMS3Q63oP68AFmIqn7a0zuYFK2oHC0qINtVVCybJIDkl0TMVwIfZwruL7K4KbiXHFMZmkHoayXUskQ"
+            response = requests.get(
+                "https://api.spotify.com/v1/me",
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {token}",
+                },
+                timeout=5,
+            )
+            print("hello")
+            print(response)
+            if response.status_code != 200:
+                return "Please contact Mazen"
+
+            return response.json()
+        except requests.exceptions.ReadTimeout as timeout:
+            return 408
+        except requests.exceptions.ConnectionError as err:
+            print("Error: Cannot connect \n", err)
+            return 408
+
+
 api.add_resource(SptfyServer, "/sptfy_server/")
 api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
 api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
+api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 
 
 if __name__ == "__main__":
