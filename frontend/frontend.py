@@ -7,16 +7,20 @@ from flask import (
     redirect,
     Request,
     request,
+    session,
+    url_for,
 )
 import requests
 from flask_sse import sse
 from flask_wtf.csrf import CSRFProtect
 import time
 import json
+import os
 
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
+app.secret_key = os.urandom(24)
 
 
 def get_time():
@@ -44,16 +48,6 @@ def root():
     r.headers.set("Access-Control-Allow-Methods", "GET")
 
     return r
-    return render_template(
-        "index.html",
-        headers={
-            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-            "Content-Security-Policy": "default-src 'self'",
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
-            "X-XSS-Protection": "1; mode=block",
-        },
-    )
 
 
 @app.route("/cat")
@@ -159,7 +153,31 @@ def callback():
 
 @app.route("/code/")
 def code():
-    return request.args
+    data = requests.post(
+        "http://localhost:9888" + "/NewUser/?code=" + request.args["code"], timeout=5
+    )
+
+    # return data.json()
+    # print(json.dumps(data))
+
+    r = redirect(url_for("userInfo"))
+    r.set_cookie("displayUser", data.json()["display_name"])
+    r.set_cookie("userID", data.json()["id"])
+
+    return r
+
+
+@app.route("/UserInfo/")
+def userInfo():
+    userID = request.cookies.get("userID")
+    displayUser = request.cookies.get("displayUser")
+
+    r = make_response(
+        render_template(
+            "userInfo.html", data=[{"id": userID, "display_name": displayUser}]
+        )
+    )
+    return r
 
 
 if __name__ == "__main__":

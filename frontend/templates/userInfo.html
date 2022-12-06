@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+
+    <ul>
+        {% for item in data %}
+        <FONT COLOR="WHITE">
+            <li>{{item.display_name}}</li>
+            <li>{{item.id}}</li>
+            {% endfor %}
+    </ul>
+
+</body>
+
+
+
+
+
+
+
+</html>
