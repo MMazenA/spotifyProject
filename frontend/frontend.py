@@ -15,12 +15,15 @@ from flask_sse import sse
 from flask_wtf.csrf import CSRFProtect
 import time
 import json
+import datetime
 import os
 
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
-app.secret_key = os.urandom(24)
+# app.secret_key = os.urandom(24)
+expire_date = datetime.datetime.now()
+expire_date = expire_date + datetime.timedelta(days=30)
 
 
 def get_time():
@@ -161,8 +164,8 @@ def code():
     # print(json.dumps(data))
 
     r = redirect(url_for("userInfo"))
-    r.set_cookie("displayUser", data.json()["display_name"])
-    r.set_cookie("userID", data.json()["id"])
+    r.set_cookie("displayUser", data.json()["display_name"], expires=expire_date)
+    r.set_cookie("userID", data.json()["id"], expires=expire_date)
 
     return r
 
@@ -178,6 +181,15 @@ def userInfo():
         )
     )
     return r
+
+
+@app.route("/log_out/")
+def log_out():
+    resp = redirect(url_for("root"))
+    resp.set_cookie("userID", "None", expires=1)
+    resp.set_cookie("displayUser", "None", expires=1)
+
+    return resp
 
 
 if __name__ == "__main__":
