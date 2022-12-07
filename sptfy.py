@@ -138,3 +138,34 @@ class Sptfy:
         else:
             return ["1", time_string, response]
         return [current_track_info, time_string, response]
+
+    def get_account(self):
+        """Retrives account information"""
+        if self.token == 0:
+            self.token = self.get_access_token()
+
+        try:
+            response = requests.get(
+                "https://api.spotify.com/v1/me",
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.token}",
+                },
+                timeout=5,
+                verify=True,
+            )
+            print("RESPONSE: ", response)
+        # print(response.json())
+        except requests.exceptions.ReadTimeout as timeout:
+            return 408
+        except requests.exceptions.ConnectionError as err:
+            print("Error: Cannot connect \n", err)
+            return 408
+
+        if response.status_code == 401:
+            print("Authorization code expired retriving new token")
+            self.token = self.get_access_token()
+            return self.get_account()
+
+        return response
