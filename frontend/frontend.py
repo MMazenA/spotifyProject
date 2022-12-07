@@ -174,6 +174,8 @@ def code():
 def userInfo():
     userID = request.cookies.get("userID")
     displayUser = request.cookies.get("displayUser")
+    if userID or displayUser is None:
+        return "xd"
 
     r = make_response(
         render_template(
