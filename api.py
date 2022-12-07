@@ -14,6 +14,7 @@ from flask_cors import CORS
 import sqlFunc
 import pythonSQLite
 import privateinfo
+import sptfy
 
 
 app = Flask(__name__)
@@ -96,15 +97,29 @@ class NewUser(Resource):
         token_headers = {"Authorization": f"Basic {client_creds_b64.decode()}"}
         try:
             req_post = requests.post(
-                token_url, data=token_data_code, headers=token_headers, timeout=5
+                token_url,
+                data=token_data_code,
+                headers=token_headers,
+                timeout=5,
+                verify=True,
             )
             token = req_post.json()["access_token"]
+            print("1: ", req_post, req_post.json())
+            print("token: ", token)
 
         except:
             return {"Status": "408"}
 
         try:
-            # token = "BQCVfFjke6nhqIJJNRY3Kw9E79hLjB4AjYqG_8cljL4d2-gzGg7kse8oLob1tC7L4o9gJw8HAbNELpkLyG8p1egK3Z5w3GOfwKYQuXldGT85B9IFPUMS3Q63oP68AFmIqn7a0zuYFK2oHC0qINtVVCybJIDkl0TMVwIfZwruL7K4KbiXHFMZmkHoayXUskQ"
+
+            tracker = sptfy.Sptfy(
+                privateinfo.client_id(),
+                privateinfo.secret_id(),
+                req_post.json()["refresh_token"],
+            )
+            print(tracker.get_account())
+            print("\n\n")
+            # token = "BQAQCZ_E7_MnIwIW_GBd4hmuotLBPK4f5Pu-X9tgrRZhW6AzpQk5J8hvf8SpgRxu1bcDHxSEiVMjHW6TEWcEPAucZrxKWheM4cj9d_hfQ7CcTnJ79-HAvxgOW2IzTAgsAVTGKpLxD1drie2wOy-qwbMS_fC-FXgbOLZ_0BSywTtMdtUROjz5I8ZuHGm1kpfgT9mnX8eAuj25IAzmI8TQURg"
             response = requests.get(
                 "https://api.spotify.com/v1/me",
                 headers={
@@ -113,10 +128,12 @@ class NewUser(Resource):
                     "Authorization": f"Bearer {token}",
                 },
                 timeout=5,
+                verify=True,
             )
+            print(response)
 
             if response.status_code != 200:
-                return "Please contact Mazen"
+                return {"display_name": "", "id": ""}
 
             return response.json()
         except requests.exceptions.ReadTimeout as timeout:
