@@ -112,13 +112,13 @@ class NewUser(Resource):
 
         try:
 
-            tracker = sptfy.Sptfy(
-                privateinfo.client_id(),
-                privateinfo.secret_id(),
-                req_post.json()["refresh_token"],
-            )
-            print(tracker.get_account())
-            print("\n\n")
+            # tracker = sptfy.Sptfy(
+            #     privateinfo.client_id(),
+            #     privateinfo.secret_id(),
+            #     req_post.json()["refresh_token"],
+            # )
+            # print(tracker.get_account())
+            # print("\n\n")
             # token = "BQAQCZ_E7_MnIwIW_GBd4hmuotLBPK4f5Pu-X9tgrRZhW6AzpQk5J8hvf8SpgRxu1bcDHxSEiVMjHW6TEWcEPAucZrxKWheM4cj9d_hfQ7CcTnJ79-HAvxgOW2IzTAgsAVTGKpLxD1drie2wOy-qwbMS_fC-FXgbOLZ_0BSywTtMdtUROjz5I8ZuHGm1kpfgT9mnX8eAuj25IAzmI8TQURg"
             response = requests.get(
                 "https://api.spotify.com/v1/me",
@@ -131,6 +131,8 @@ class NewUser(Resource):
                 verify=True,
             )
             print(response)
+            if response.status_code == 403:
+                return {"display_name": "", "id": ""}
 
             if response.status_code != 200:
                 return {"display_name": "", "id": ""}
