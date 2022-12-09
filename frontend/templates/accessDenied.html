@@ -1,0 +1,75 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+
+    <div class="center-screen">
+        <div>
+            <p>
+                <font size="+30" FONT COLOR="WHITE"> <strong>403</strong></font>
+            </p>
+            <p>
+                <font size="+100" FONT COLOR="WHITE"> <strong>Access Denied</strong></font>
+            </p>
+        </div>
+
+    </div>
+
+    </body>
+
+
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+
+<body>
+    <header>
+
+        <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
+
+        <nav>
+            <ul class="nav__links">
+                <li><a href="/">Home</a></li>
+                <li><a href="about">About</a></li>
+                <li><a href="#">Users</a></li>
+            </ul>
+        </nav>
+        {% for item in data %}
+        {% if "True" in item.logged_in%}
+        <a class="cta" href="UserInfo">{{item.display_name}}</a>
+        {% else %}
+        <a class="cta" href="callback">Login</a>
+        {% endif %}
+        <p class="menu cta">Menu</p>
+        {% endfor %}
+
+    </header>
+
+    <div style="min-height: 94vh" class="center-screen">
+        <div>
+            <p>
+                <font size=40px FONT COLOR="WHITE"> <strong>403</strong></font>
+            </p>
+            <p>
+                <font size=40px FONT COLOR="WHITE"> <strong>Access Denied</strong></font>
+            </p>
+        </div>
+
+    </div>
+</body>
+
+</html>
