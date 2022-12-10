@@ -44,15 +44,15 @@
         <nav>
             <ul class="nav__links">
                 <li><a href="/">Home</a></li>
-                <li><a href="about">About</a></li>
+                <li><a href="/about">About</a></li>
                 <li><a href="#">Users</a></li>
             </ul>
         </nav>
         {% for item in data %}
         {% if "True" in item.logged_in%}
-        <a class="cta" href="UserInfo">{{item.display_name}}</a>
+        <a class="cta" href="/UserInfo">{{item.display_name}}</a>
         {% else %}
-        <a class="cta" href="callback">Login</a>
+        <a class="cta" href="/callback">Login</a>
         {% endif %}
         <p class="menu cta">Menu</p>
         {% endfor %}
@@ -61,12 +61,11 @@
 
     <div style="min-height: 94vh" class="center-screen">
         <div>
-            <p>
-                <font size=40px FONT COLOR="WHITE"> <strong>403</strong></font>
-            </p>
-            <p>
-                <font size=40px FONT COLOR="WHITE"> <strong>Access Denied</strong></font>
-            </p>
+            <font size=40px FONT COLOR="WHITE"><strong>
+                    <p>403</p>
+                    <p>Access Denied</p>
+                    <p style="font-size: 30px;" FONT COLOR="WHITE">Log out of spotify to try again</p>
+                </strong></font>
         </div>
 
     </div>

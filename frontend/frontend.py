@@ -1,5 +1,15 @@
 from email import header
-from flask import Flask, render_template, Response, make_response, redirect, Request, request, session, url_for
+from flask import (
+    Flask,
+    render_template,
+    Response,
+    make_response,
+    redirect,
+    Request,
+    request,
+    session,
+    url_for,
+)
 import requests
 from flask_sse import sse
 from flask_wtf.csrf import CSRFProtect
@@ -35,7 +45,7 @@ def getCookies():
     if logged_in is None:
         logged_in = ""
 
-    return [{"id": "testing", "display_name": displayUser, "logged_in": logged_in}]
+    return [{"id": userID, "display_name": displayUser, "logged_in": logged_in}]
 
 
 @app.route("/")
@@ -44,10 +54,9 @@ def root():
     data = getCookies()
 
     r = make_response(render_template("index.html", data=data))
-    r.headers.set("Strict-Transport-Security",
-                  "max-age=31536000; includeSubDomains")
-    r.headers.setlist('Content-Security-Policy', [
-        "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"])
+    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    # r.headers.setlist('Content-Security-Policy', [
+    #     "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"])
 
     r.headers.set("X-Content-Type-Options", "nosniff")
     r.headers.set("X-Content-Type-Options", "nosniff")
@@ -61,10 +70,13 @@ def root():
 @app.route("/cat")
 def bruh():
     r = make_response(render_template("cat.html"))
-    r.headers.set("Strict-Transport-Security",
-                  "max-age=31536000; includeSubDomains")
-    r.headers.setlist('Content-Security-Policy', [
-        "default-src 'self'; script-src 'sha256-IRZbj3WeMT6hi8bYPB6DW7adQVdJYJfYBzhCPMQZEIg='; img-src https://purr.objects-us-east-1.dream.io/; connect-src https://aws.random.cat/meow"])
+    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    r.headers.setlist(
+        "Content-Security-Policy",
+        [
+            "default-src 'self'; script-src 'sha256-IRZbj3WeMT6hi8bYPB6DW7adQVdJYJfYBzhCPMQZEIg='; img-src https://purr.objects-us-east-1.dream.io/; connect-src https://aws.random.cat/meow"
+        ],
+    )
 
     r.headers.set("X-Content-Type-Options", "nosniff")
     r.headers.set("X-Content-Type-Options", "nosniff")
@@ -91,7 +103,22 @@ def stream():
             data = "data: {}\n\n".format(json.dumps(data))
             # data = data.replace("'", '"')
             yield data
-    return Response(eventStream(), mimetype="text/event-stream", headers={"Content-Type": "text/event-stream", "Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Strict-Transport-Security": "max-age=31536000; includeSubDomains", "Content-Security-Policy": "default-src self", "X-Content-Type-Options": "nosniff", "X-Frame-Options": "SAMEORIGIN", "X-XSS-Protection": "1; mode=block", "Access-Control-Allow-Methods": "GET"})
+
+    return Response(
+        eventStream(),
+        mimetype="text/event-stream",
+        headers={
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+            "Content-Security-Policy": "default-src self",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "SAMEORIGIN",
+            "X-XSS-Protection": "1; mode=block",
+            "Access-Control-Allow-Methods": "GET",
+        },
+    )
 
 
 @app.route("/stream2")
@@ -109,7 +136,7 @@ def stream2():
             ).json()
             # formating because requests.json was turning keys into single quotes
             data = "data: {}\n\n".format(json.dumps(data))
-            # data = data.replace("'", '"')
+            # print(data)
             yield data
 
     return Response(
@@ -132,54 +159,63 @@ def stream2():
 @app.route("/callback/")
 def callback():
     userauthenticate = (
-        "response_type=code" +
-        '&client_id='+"aa1826bc005040e98502bf7d9e6d5ba2" +
-        "&scope=user-read-currently-playing%20user-read-playback-state%20user-read-playback-position%20user-read-private"
+        "response_type=code"
+        + "&client_id="
+        + "aa1826bc005040e98502bf7d9e6d5ba2"
+        + "&scope=user-read-currently-playing%20user-read-playback-state%20user-read-playback-position%20user-read-private"
         "&redirect_uri=https://mazenmirza.com/code/"
     )
-    return redirect('https://accounts.spotify.com/authorize?'+userauthenticate)
+    return redirect("https://accounts.spotify.com/authorize?" + userauthenticate)
 
 
 @app.route("/code/")
 def code():
     data = requests.post(
-        "http://localhost:9888" + "/NewUser/?code="+request.args["code"], timeout=5
+        "http://localhost:9888" + "/NewUser/?code=" + request.args["code"], timeout=5
     )
 
-    #print(data, data.json())
+    # print(data, data.json())
 
-    r = redirect(url_for('userInfo'))
+    r = redirect(url_for("userInfo"))
     # print(data.json()["display_name"])
-    r.set_cookie("displayUser", data.json()[
-                 "display_name"], expires=expire_date)
+    r.set_cookie("displayUser", data.json()["display_name"], expires=expire_date)
     r.set_cookie("userID", data.json()["id"], expires=expire_date)
-    r.set_cookie("logged_in", "True", expires=expire_date)
+    if (
+        data.json()["id"] == ""
+        or data.json()["id"] == None
+        or data.json()["display_name"] == ""
+        or data.json()["display_name"] == None
+    ):
+        r.set_cookie("logged_in", "False", expires=expire_date)
+    else:
+        r.set_cookie("logged_in", "True", expires=expire_date)
 
     return r
 
 
-@ app.route("/UserInfo/")
+@app.route("/UserInfo/")
 def userInfo():
-    userID = request.cookies.get("userID")
-    displayUser = request.cookies.get("displayUser")
-    logged_in = request.cookies.get("logged_in")
-
-    if userID == "" or displayUser == "" or userID is None or displayUser is None:
-        resp = make_response(render_template("accessDenied.html"))
+    data = getCookies()
+    if [(x) for x in data[0].values() if x == "" or x == None]:
+        resp = make_response(render_template("accessDenied.html", data=data))
         resp.set_cookie("userID", "", expires=1)
         resp.set_cookie("displayUser", "", expires=1)
         resp.set_cookie("logged_in", "False", expires=expire_date)
 
         return resp
 
-    r = make_response(render_template("userInfo.html", data=[
-                      {"id": userID, "display_name": displayUser}]))
+    r = make_response(
+        render_template(
+            "userInfo.html",
+            data=[{"id": data[0]["id"], "display_name": data[0]["display_name"]}],
+        )
+    )
     return r
 
 
-@ app.route("/log_out/")
+@app.route("/log_out/")
 def log_out():
-    resp = redirect(url_for('root'))
+    resp = redirect(url_for("root"))
     resp.set_cookie("userID", "", expires=1)
     resp.set_cookie("displayUser", "", expires=1)
     resp.set_cookie("logged_in", "False", expires=expire_date)

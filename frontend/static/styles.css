@@ -111,7 +111,7 @@ footer {
 
 .img-holder p {
   position: absolute;
-  top: 40%;
+  top: 45%;
   left: 0;
   right: 0;
   transform: translate(0, -50%);
@@ -144,7 +144,6 @@ nav {
 .nav__links a,
 .cta,
 .overlay__content a {
-  /* font-family: "Montserrat", sans-serif; */
   font-weight: 500;
   color: #edf0f1;
   text-decoration: none;

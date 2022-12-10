@@ -37,8 +37,19 @@
 
     </div>
     <footer>
-        <div id="top-ten">
-        </div>
+        <font size="+2"> <strong>
+                <div class="row">
+                    <div class="img-holder">
+                        <div class="column" style="width:100%; text-align: center; font-size: 35px;">
+                            <p style="padding-bottom: 40px;"> Weekly top 4</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="top-ten" class="row">
+                </div>
+            </strong>
+        </font>
     </footer>
 </body>
 
@@ -66,7 +77,7 @@
     eventSource.onmessage = function (e) {
         try {
             var data = JSON.parse(e.data)
-            top_ten.innerHTML = "<font size=\"+2\"> <strong> <div class=\"row\">" +
+            top_ten.innerHTML =
                 "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[1].pic_link + "  style=\"width:100%;\"></div>" +
                 "<p>" + data[1].song_name + "<br>" + data[1].total_play_count + "</p></div>" +
 
@@ -77,9 +88,7 @@
                 "<p>" + data[3].song_name + "<br>" + data[3].total_play_count + "</p></div>" +
 
                 "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[4].pic_link + "  style=\"width:100%;\"></div>" +
-                "<p>" + data[4].song_name + "<br>" + data[4].total_play_count + "</p></div>" +
-
-                "</div></strong></font>"
+                "<p>" + data[4].song_name + "<br>" + data[4].total_play_count + "</p></div>"
         }
         catch (error) {
             console.log(error)
