@@ -155,8 +155,7 @@ class Sptfy:
                 timeout=5,
                 verify=True,
             )
-            print("RESPONSE: ", response)
-        # print(response.json())
+            # print("RESPONSE: ", response)
         except requests.exceptions.ReadTimeout as timeout:
             return 408
         except requests.exceptions.ConnectionError as err:
