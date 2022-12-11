@@ -17,6 +17,7 @@ import pythonSQLite
 )
 def main(local):
     """Spotfiy tracker."""
+    
     count_prevent = True
     if local is None:
         local = False
@@ -110,6 +111,12 @@ def main(local):
                 count += 1
                 count_prevent = False
                 repeat = False
+                requests.post(
+                    privateinfo.api_host() + "weekly_counter/{}".format(privateinfo.get_user_id()),
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                    json=payload,
+                    timeout=5,
+                )
             elif last_id == listining_info.get("id") and repeat:
                 count = last_count
             payload = {
