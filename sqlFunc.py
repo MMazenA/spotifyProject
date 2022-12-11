@@ -237,9 +237,8 @@ def get_all_users():
             cur.close()
             mydb.close()
 
-            row = np.array(row)
-            print(row)
-            numbered_dict = dict(enumerate(row.flatten(), 1))
+            # row = np.array(row)
+            #print(row)
 
         except mysql.connector.Error as err1:
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
@@ -247,7 +246,7 @@ def get_all_users():
     except mysql.connector.Error as err:
         raise Exception("ERROR: Unable to connect to database", err) from err
 
-    return numbered_dict
+    return {"data": row}
 
 
 def get_user_info(id):
