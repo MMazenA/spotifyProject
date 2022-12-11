@@ -22,7 +22,6 @@ api = Api(app)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
 
-
 song_post_args = reqparse.RequestParser()
 song_post_args.add_argument("song_id", type=str, help="Song data")
 song_post_args.add_argument("song_name", type=str, help="Song data")
@@ -33,6 +32,18 @@ song_post_args.add_argument("total_play_count", type=int, help="Song data")
 song_post_args.add_argument("current_play_time", type=str, help="Song data")
 song_post_args.add_argument("pic_link", type=str, help="Song data")
 song_post_args.add_argument("row_id", type=int, help="Row ID")
+
+
+insert_post_args = reqparse.RequestParser()
+insert_post_args.add_argument("song_id", type=str, help="Song data")
+insert_post_args.add_argument("song_name", type=str, help="Song data")
+insert_post_args.add_argument("artisits", type=str, help="Song data")
+insert_post_args.add_argument("primary_artist", type=str, help="Song data")
+insert_post_args.add_argument("song_length", type=str, help="Song data")
+insert_post_args.add_argument("total_play_count", type=int, help="Song data")
+insert_post_args.add_argument("current_play_time", type=str, help="Song data")
+insert_post_args.add_argument("pic_link", type=str, help="Song data")
+insert_post_args.add_argument("row_id", type=int, help="Row ID")
 
 
 class SptfyServer(Resource):
@@ -48,6 +59,17 @@ class SptfyServer(Resource):
 
         sqlFunc.data_insert(args)
         return {"Status": "Sucess"}
+
+
+class weekly_counter(Resource):
+    def post(self, user_id):
+        print(user_id)
+        args = insert_post_args.parse_args()
+        args.pop("row_id", None)
+        sqlFunc.insert_into_dynamic(user_id, args)
+
+    def get(self, user_id):
+        return sqlFunc.get_last_week(user_id)
 
 
 class locateSong(Resource):
@@ -104,22 +126,14 @@ class NewUser(Resource):
                 verify=True,
             )
             token = req_post.json()["access_token"]
-            print("1: ", req_post, req_post.json())
-            print("token: ", token)
+            refresh_token = req_post.json()["refresh_token"]
+            # print("1: ", req_post, req_post.json())
+            # print("token: ", token)
 
         except:
             return {"Status": "408"}
 
         try:
-
-            # tracker = sptfy.Sptfy(
-            #     privateinfo.client_id(),
-            #     privateinfo.secret_id(),
-            #     req_post.json()["refresh_token"],
-            # )
-            # print(tracker.get_account())
-            # print("\n\n")
-            # token = "BQAQCZ_E7_MnIwIW_GBd4hmuotLBPK4f5Pu-X9tgrRZhW6AzpQk5J8hvf8SpgRxu1bcDHxSEiVMjHW6TEWcEPAucZrxKWheM4cj9d_hfQ7CcTnJ79-HAvxgOW2IzTAgsAVTGKpLxD1drie2wOy-qwbMS_fC-FXgbOLZ_0BSywTtMdtUROjz5I8ZuHGm1kpfgT9mnX8eAuj25IAzmI8TQURg"
             response = requests.get(
                 "https://api.spotify.com/v1/me",
                 headers={
@@ -130,19 +144,38 @@ class NewUser(Resource):
                 timeout=5,
                 verify=True,
             )
-            print(response)
+            # print(response)
             if response.status_code == 403:
                 return {"display_name": "", "id": ""}
 
             if response.status_code != 200:
                 return {"display_name": "", "id": ""}
-
-            return response.json()
+            if response.status_code == 200:
+                self.add_user(
+                    response.json()["id"],
+                    response.json()["display_name"],
+                    refresh_token,
+                )
+                return response.json()
+            else:
+                return 408
         except requests.exceptions.ReadTimeout as timeout:
             return 408
         except requests.exceptions.ConnectionError as err:
             print("Error: Cannot connect \n", err)
             return 408
+
+    def add_user(self, id, display_name, refresh_token):
+        if sqlFunc.add_user(id, display_name, refresh_token):
+
+            return 200
+        else:
+            return 400
+
+
+class get_user(Resource):
+    def get(self, id):
+        return sqlFunc.get_user_info(id)
 
 
 api.add_resource(SptfyServer, "/sptfy_server/")
@@ -150,6 +183,8 @@ api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
 api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
+api.add_resource(get_user, "/user/<id>", endpoint="user")
+api.add_resource(weekly_counter, "/weekly_counter/<user_id>", endpoint="weekly_counter")
 
 
 if __name__ == "__main__":
