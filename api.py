@@ -175,7 +175,13 @@ class NewUser(Resource):
 
 class get_user(Resource):
     def get(self, id):
-        return sqlFunc.get_user_info(id)
+        if id is not None:
+            return sqlFunc.get_user_info(id)
+
+
+class get_all_users(Resource):
+    def get(self):
+        return sqlFunc.get_all_users()
 
 
 api.add_resource(SptfyServer, "/sptfy_server/")
@@ -184,6 +190,8 @@ api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
 api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 api.add_resource(get_user, "/user/<id>", endpoint="user")
+api.add_resource(get_all_users, "/allusers/", endpoint="allusers")
+
 api.add_resource(weekly_counter, "/weekly_counter/<user_id>", endpoint="weekly_counter")
 
 
