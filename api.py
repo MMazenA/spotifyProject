@@ -40,10 +40,8 @@ insert_post_args.add_argument("song_name", type=str, help="Song data")
 insert_post_args.add_argument("artisits", type=str, help="Song data")
 insert_post_args.add_argument("primary_artist", type=str, help="Song data")
 insert_post_args.add_argument("song_length", type=str, help="Song data")
-insert_post_args.add_argument("total_play_count", type=int, help="Song data")
 insert_post_args.add_argument("current_play_time", type=str, help="Song data")
 insert_post_args.add_argument("pic_link", type=str, help="Song data")
-insert_post_args.add_argument("row_id", type=int, help="Row ID")
 
 
 class SptfyServer(Resource):
@@ -65,7 +63,6 @@ class weekly_counter(Resource):
     def post(self, user_id):
         print(user_id)
         args = insert_post_args.parse_args()
-        args.pop("row_id", None)
         sqlFunc.insert_into_dynamic(user_id, args)
 
     def get(self, user_id):

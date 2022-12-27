@@ -4,96 +4,28 @@ import time
 import requests
 import sptfy
 import privateinfo
+import sqlFunc
 
 
 def main(refresh_token, user_id):
     """Spotfiy tracker for single user and paramtized refresh token and user ID, saves only to server."""
 
-    count_prevent = True
-
+    repeat_unlocked = True
+    paused_time = 0
     last_id = 0
-
-    sleep_timer = 25
     tracker = sptfy.Sptfy(
         privateinfo.client_id(), privateinfo.secret_id(), refresh_token
     )
 
     while True:
         listining_info, time_string, response = tracker.get_current_track()
-
-        while listining_info == "408":
+        while response == 408:
             print("Connection timeout, attempting to reconnect")
             time.sleep(30)
             listining_info, time_string, response = tracker.get_current_track()
 
-        if listining_info == "1":
-            print(time_string)
-            print("Non-song type is currently playing")
-
-        sleep_timer = 0
-        if listining_info == "1":  # if current track is not a song
-            sleep_timer = 29
         if listining_info not in ("0", "1"):  # if data is available
             sleep_timer = 5
-            if not listining_info.get("is_playing"):
-                sleep_timer = 25
-            repeat = True
-
-            last_song_db = requests.get(
-                privateinfo.api_host() + "/sptfy_server/", timeout=5
-            ).json()["data"]
-
-            if last_song_db is not None:
-                last_id = last_song_db["song_id"]
-                last_row_id = last_song_db["rowid"]
-            else:
-                print("what does this do here")
-                last_id = 0
-                 last_row_id = 0
-            if last_id != listining_info.get("id"):
-                print()
-                print(time_string, response)
-                print(listining_info)
-                print("different song playing now")
-                locateSong = requests.get(
-                    privateinfo.api_host()
-                    + "/locate_song/"
-                    + "?song_id="
-                    + listining_info.get("id"),
-                    headers={"Content-Type": "application/json; charset=utf-8"},
-                    timeout=5,
-                ).json()
-                if locateSong is not None:
-                    count = locateSong["total_play_count"]
-                else:
-                    count = 0
-                count_prevent = True
-            # accounts for songs on repeat
-            if (
-                last_id == listining_info.get("id")
-                and not count_prevent
-                and listining_info.get("position") < 30000
-            ):
-                count_prevent = True
-                print("Repeating")
-            if (
-                last_id == listining_info.get("id")
-                and listining_info.get("position") > 30000
-                and count_prevent
-            ):
-                print("Adding 1 to count")
-                count = int(last_count)
-                count += 1
-                count_prevent = False
-                repeat = False
-                requests.post(
-                    privateinfo.api_host() + "weekly_counter/{}".format(user_id),
-                    headers={"Content-Type": "application/json; charset=utf-8"},
-                    json=payload,
-                    timeout=5,
-                )
-            elif last_id == listining_info.get("id") and repeat:
-                count = last_count
             payload = {
                 "song_id": str(listining_info.get("id")),
                 "song_name": str(listining_info.get("name")),
@@ -103,10 +35,46 @@ def main(refresh_token, user_id):
                 "current_play_time": str(listining_info.get("position")),
                 "pic_link": str(listining_info.get("picture")),
             }
+            if not bool(listining_info.get("is_playing")):
+                paused_time += 4
 
-            if last_id != payload["song_id"]:
-                last_row_id = last_row_id + 1
-            payload["row_id"] = last_row_id
+            if listining_info.get("id") != last_id:  # if song is different
+                print(
+                    time_string,
+                    response,
+                    "\ndifferent song streaming now\n",
+                    listining_info,
+                )
+                last_id = listining_info.get("id")
+                start_time = time.time()
+                paused_time = 0
+                repeat_unlocked = True
+            else:  # if it is same song
+                if start_time + 25 + paused_time < time.time() and repeat_unlocked:
+                    print(time_string, response, "\nAdding 1 to count")
+                    repeat_unlocked = False
+                    paused_time = 0
+                    requests.post(
+                        privateinfo.api_host() + "weekly_counter/{}".format(user_id),
+                        headers={"Content-Type": "application/json; charset=utf-8"},
+                        json=payload,
+                        timeout=5,
+                    )
+                if (
+                    start_time + 25 + 30 + paused_time < time.time()
+                    and listining_info.get("position") < 30000
+                ):  # 30 seconds after a stream is recorded and the song is at the start again, reset the timer and permit count
 
+                    start_time = time.time() + 5
+                    repeat_unlocked = True
+                    paused_time = 0
+                    print("unlocked")
 
+                sqlFunc.update_current_tracker(list((user_id, payload)))
+
+        else:
+            sleep_timer = 29
         time.sleep(sleep_timer)
+
+
+main(privateinfo.refresh_token(), "lul")

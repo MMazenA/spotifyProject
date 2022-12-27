@@ -238,7 +238,7 @@ def get_all_users():
             mydb.close()
 
             # row = np.array(row)
-            #print(row)
+            # print(row)
 
         except mysql.connector.Error as err1:
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
@@ -298,11 +298,9 @@ def make_table(id):
                     `artists` text DEFAULT NULL,
                     `primary_artist` text DEFAULT NULL,
                     `song_length` text DEFAULT NULL,
-                    `total_play_count` int(11) DEFAULT NULL,
                     `current_play_time` text DEFAULT NULL,
                     `pic_link` text DEFAULT NULL,
                     `date` datetime NOT NULL DEFAULT current_timestamp(),
-                    PRIMARY KEY (`song_id`),
                     UNIQUE KEY `date`(`date`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
                 % id
@@ -322,15 +320,12 @@ def make_table(id):
 def insert_into_dynamic(id, payload):
     """Create dynamic table based on ID. Does not overwrite pre-existing table"""
     payload = list(payload.values())
-    # payload.insert(0, id)
-    # print(payload)
-    # print(payload, len(payload))
 
     sql = """INSERT INTO {}
     (`song_id`, `song_name`, `artists`, `primary_artist`,
-    `song_length`, `total_play_count`, `current_play_time`,
+    `song_length`, `current_play_time`,
     `pic_link`)
-    VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+    VALUES(%s,%s,%s,%s,%s,%s,%s)
     """.format(
         id
     )
@@ -392,3 +387,105 @@ def get_last_week(id):
         raise Exception("ERROR: Unable to connect to database", err) from err
 
     return rows
+
+
+def make_current_tracker_table():
+    """Create dynamic table based on ID. Does not overwrite pre-existing table"""
+    row = ""
+    try:
+
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        cur = mydb.cursor(dictionary=True)
+        try:
+            sql = """CREATE TABLE IF NOT EXISTS `current_for_all` (
+                `user_id` varchar(200),
+                `song_id` varchar(50) NOT NULL,
+                `song_name` text NOT NULL,
+                `artists` text DEFAULT NULL,
+                `primary_artist` text DEFAULT NULL,
+                `song_length` text DEFAULT NULL,
+                `current_play_time` text DEFAULT NULL,
+                `pic_link` text DEFAULT NULL,
+                PRIMARY KEY (user_id),
+                CONSTRAINT `user_id_lock`
+                    FOREIGN KEY (user_id) REFERENCES users (id)
+                    ON DELETE CASCADE
+                    ON UPDATE RESTRICT
+                
+                ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;"""
+
+            cur.execute(sql)
+            cur.close()
+            mydb.close()
+
+        except mysql.connector.Error as err1:
+            print("ERROR: Unable to retrive requested row", err1)
+
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+    return row
+
+
+def update_current_tracker(payload):
+    """Create dynamic table based on ID. Does not overwrite pre-existing table"""
+    user_id = payload[0]
+    user_id = "eggzimic"
+    payload = list(payload[1].values())
+
+    sql = """INSERT INTO `current_for_all`
+    (`user_id`,`song_id`, `song_name`, `artists`, `primary_artist`,
+    `song_length`, `current_play_time`,
+    `pic_link`)
+    VALUES(%s, %s, %s, %s, %s, %s, %s, %s)  ON DUPLICATE KEY UPDATE
+    `song_id`=%s,
+    `song_name`=%s,
+    `artists`=%s,
+    `primary_artist`=%s,
+    `song_length`=%s,
+    `current_play_time`=%s,
+    `pic_link`=%s"""
+
+    val = (
+        user_id,
+        payload[0],
+        payload[1],
+        payload[2],
+        payload[3],
+        payload[4],
+        payload[5],
+        payload[6],
+        payload[0],
+        payload[1],
+        payload[2],
+        payload[3],
+        payload[4],
+        payload[5],
+        payload[6],
+    )
+
+    try:
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        cur = mydb.cursor()
+        try:
+            cur.execute(sql, val)
+            mydb.commit()
+            cur.close()
+            mydb.close()
+        except mysql.connector.Error as sqlerr1:
+            print("Insert Error: Values: ", payload)
+            print(sqlerr1)
+            print(sql)
+    except mysql.connector.Error as sqlerr:
+        print("Unable to connect to database: ", sqlerr)
