@@ -437,7 +437,6 @@ def make_current_tracker_table():
 def update_current_tracker(payload):
     """Create dynamic table based on ID. Does not overwrite pre-existing table"""
     user_id = payload[0]
-    user_id = "eggzimic"
     payload = list(payload[1].values())
 
     sql = """INSERT INTO `current_for_all`
@@ -586,8 +585,8 @@ def get_top_four(id):
                     .reset_index(name="count")
                 )
 
-                pdf.sort_values(by=["count"], inplace=True)
-                thing = pdf.tail(4).to_dict("records")
+                pdf.sort_values(by=["count"], inplace=True, ascending=False)
+                thing = pdf.head(4).to_dict("records")
                 row = np.array(thing)
                 numbered_dict = dict(enumerate(row.flatten(), 1))
         except mysql.connector.Error as err1:
