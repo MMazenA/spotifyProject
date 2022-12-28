@@ -189,6 +189,11 @@ class get_current_song(Resource):
         return sqlFunc.get_current_song(id)
 
 
+class get_top_four(Resource):
+    def get(self, id):
+        return sqlFunc.get_top_four(id)
+
+
 api.add_resource(SptfyServer, "/sptfy_server/")
 api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
@@ -201,6 +206,7 @@ api.add_resource(get_full_users, "/get_full_users/", endpoint="get_full_users")
 api.add_resource(
     get_current_song, "/get_current_song/<id>", endpoint="get_current_song"
 )
+api.add_resource(get_top_four, "/get_top_four/<id>", endpoint="get_top_four")
 
 
 if __name__ == "__main__":

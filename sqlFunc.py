@@ -2,6 +2,8 @@
 import mysql.connector
 import privateinfo
 import numpy as np
+import pandas as pd
+import warnings
 
 
 def data_insert(payload):
@@ -547,3 +549,49 @@ def get_current_song(id):
         raise Exception("ERROR: Unable to connect to database", err) from err
 
     return {"data": row}
+
+
+def get_top_four(id):
+    try:
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        try:
+            with warnings.catch_warnings(record=True):
+                warnings.simplefilter("always")
+                sql = """SELECT * 
+                    FROM `%s` 
+                    WHERE DATE_ADD(`date`, INTERVAL 7 DAY) >= NOW();""" % (
+                    id
+                )
+                pdf = pd.read_sql(sql, con=mydb)
+                mydb.close()
+
+                pdf = (
+                    pdf.groupby(
+                        [
+                            "song_id",
+                            "song_name",
+                            "artists",
+                            "primary_artist",
+                            "song_length",
+                            "pic_link",
+                        ]
+                    )["song_id"]
+                    .count()
+                    .reset_index(name="count")
+                )
+
+                pdf.sort_values(by=["count"], inplace=True)
+                thing = pdf.tail(4).to_dict("records")
+                row = np.array(thing)
+                numbered_dict = dict(enumerate(row.flatten(), 1))
+        except mysql.connector.Error as err1:
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+    return numbered_dict
