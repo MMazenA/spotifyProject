@@ -77,4 +77,5 @@ def main(refresh_token, user_id):
         time.sleep(sleep_timer)
 
 
-main(privateinfo.refresh_token(), "lul")
+if __name__ == "__main__":
+    main(privateinfo.refresh_token(), "lul")

@@ -489,3 +489,61 @@ def update_current_tracker(payload):
             print(sql)
     except mysql.connector.Error as sqlerr:
         print("Unable to connect to database: ", sqlerr)
+
+
+def get_all_users_safe():
+    row = ""
+    try:
+
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        cur = mydb.cursor(dictionary=True, buffered=True)
+        try:
+            sql = "SELECT `id`,`display_name` FROM `users`"
+            cur.execute(sql)
+            row = cur.fetchall()
+            cur.close()
+            mydb.close()
+
+        except mysql.connector.Error as err1:
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
+
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+
+    return {"data": row}
+
+
+def get_current_song(id):
+    row = ""
+    try:
+        mydb = mysql.connector.connect(
+            host=privateinfo.sql_host(),
+            user=privateinfo.sql_user(),
+            password=privateinfo.sql_pass(),
+            database=privateinfo.sql_db(),
+            connection_timeout=5,
+        )
+        cur = mydb.cursor(dictionary=True)
+        try:
+            sql = (
+                """SELECT `song_id`,`song_name`,`artists`,`primary_artist`,`song_length`,`current_play_time`,`pic_link` FROM `current_for_all` WHERE `user_id`= '%s';"""
+                % id
+            )
+            cur.execute(sql)
+            row = cur.fetchone()
+            cur.close()
+            mydb.close()
+
+        except mysql.connector.Error as err1:
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
+
+    except mysql.connector.Error as err:
+        raise Exception("ERROR: Unable to connect to database", err) from err
+
+    return {"data": row}

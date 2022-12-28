@@ -61,7 +61,6 @@ class SptfyServer(Resource):
 
 class weekly_counter(Resource):
     def post(self, user_id):
-        print(user_id)
         args = insert_post_args.parse_args()
         sqlFunc.insert_into_dynamic(user_id, args)
 
@@ -124,8 +123,6 @@ class NewUser(Resource):
             )
             token = req_post.json()["access_token"]
             refresh_token = req_post.json()["refresh_token"]
-            # print("1: ", req_post, req_post.json())
-            # print("token: ", token)
 
         except:
             return {"Status": "408"}
@@ -164,6 +161,7 @@ class NewUser(Resource):
 
     def add_user(self, id, display_name, refresh_token):
         if sqlFunc.add_user(id, display_name, refresh_token):
+            sqlFunc.make_table(id)
 
             return 200
         else:
@@ -178,7 +176,17 @@ class get_user(Resource):
 
 class get_all_users(Resource):
     def get(self):
+        return sqlFunc.get_all_users_safe()
+
+
+class get_full_users(Resource):
+    def get(self):
         return sqlFunc.get_all_users()
+
+
+class get_current_song(Resource):
+    def get(self, id):
+        return sqlFunc.get_current_song(id)
 
 
 api.add_resource(SptfyServer, "/sptfy_server/")
@@ -188,14 +196,12 @@ api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 api.add_resource(get_user, "/user/<id>", endpoint="user")
 api.add_resource(get_all_users, "/allusers/", endpoint="allusers")
-
 api.add_resource(weekly_counter, "/weekly_counter/<user_id>", endpoint="weekly_counter")
+api.add_resource(get_full_users, "/get_full_users/", endpoint="get_full_users")
+api.add_resource(
+    get_current_song, "/get_current_song/<id>", endpoint="get_current_song"
+)
 
 
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=9888,
-        debug=True,
-        threaded=True,
-    )
+    app.run(host="0.0.0.0", port=9888, threaded=True)
