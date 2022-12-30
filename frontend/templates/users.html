@@ -11,6 +11,8 @@
     <header>
 
         <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
+
+
         <nav>
             <ul class="nav__links">
                 {% for item in data %}
@@ -27,7 +29,7 @@
         </nav>
         {% for item in data %}
         {% if "True" in item.logged_in%}
-        <a class="cta" href="/log_out">logout</a>
+        <a class="cta" href="/UserInfo">{{item.display_name}}</a>
         {% else %}
         <a class="cta" href="/callback">Login</a>
         {% endif %}
@@ -36,17 +38,23 @@
 
     </header>
 
-    <ul>
-        {% for item in data %}
-        <FONT COLOR="WHITE">
-            <li>{{item.display_name}}</li>
-            <li>{{item.id}}</li>
+
+    <div class="center-screen">
+        <div id="song_name_div" class="center-screen2">
+            {% for result in data %}
+            <tr>
+                {% for elem in result.names %}
+                <td><a href="/User/{{elem.id}}">{{elem.display_name}} ({{elem.id}})</a></td>
+                <!-- <td>{{elem.id}}</td> -->
+                <br>
+                {% endfor %}
+            </tr>
             {% endfor %}
-    </ul>
+        </div>
 
+
+    </div>
 </body>
-
-
 
 
 

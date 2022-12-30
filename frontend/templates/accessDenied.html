@@ -43,9 +43,16 @@
 
         <nav>
             <ul class="nav__links">
+                {% for item in data %}
+                {% if "True" in item.logged_in%}
+                <li><a href="/User/{{item.id}}">Home</a></li>
+                {% else %}
                 <li><a href="/">Home</a></li>
+
+                {% endif %}
+                {% endfor %}
                 <li><a href="/about">About</a></li>
-                <li><a href="#">Users</a></li>
+                <li><a href="/Users">Users</a></li>
             </ul>
         </nav>
         {% for item in data %}
@@ -64,6 +71,7 @@
             <font size=40px FONT COLOR="WHITE"><strong>
                     <p>403</p>
                     <p>Access Denied</p>
+                    <br>
                     <p style="font-size: 30px;" FONT COLOR="WHITE">Log out of spotify to try again</p>
                 </strong></font>
         </div>

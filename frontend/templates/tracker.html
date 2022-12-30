@@ -47,8 +47,8 @@
         <font size="+2"> <strong>
                 <div class="row">
                     <div class="img-holder">
-                        <div class="column" style="width:100%; text-align: center; font-size: 30px;">
-                            <p style="padding-bottom: 40px;"> Weekly top 4</p>
+                        <div class="column" style="width:100%; text-align: center; font-size: 35px;">
+                            <p id="top4-title" style="padding-bottom: 40px;"> Weekly top 4</p>
                         </div>
                     </div>
                 </div>
@@ -73,35 +73,41 @@
 
 
 
-    var eventSource = new EventSource("/stream/eggzimic");
+    var eventSource = new EventSource("/stream/" + window.location.href.slice(28, 100));
     eventSource.onmessage = function (e) {
         image_div.innerHTML = "<img src='" + JSON.parse(e.data).pic_link + "'/>";
         song_name_div.innerHTML = "<p>" + "<font size=\"+2\"> <strong>" + JSON.parse(e.data).song_name + "</strong></font></p><p>" + JSON.parse(e.data).primary_artist + "</p>"
 
     };
 
-    var eventSource = new EventSource("/stream2/eggzimic");
+    var eventSource = new EventSource("/stream2/" + window.location.href.slice(28, 100));
     eventSource.onmessage = function (e) {
         try {
-            
             var data = JSON.parse(e.data)
-            top_ten.innerHTML =
-                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[1].pic_link + "  style=\"width:100%;\"></div>" +
-                "<p>" + data[1].song_name + "<br>" + data[1].count + "</p></div>" +
+            if (data[4] != undefined) {
+                top_ten.innerHTML =
+                    "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[1].pic_link + "  style=\"width:100%;\"></div>" +
+                    "<p>" + data[1].song_name + "<br>" + data[1].count + "</p></div>" +
 
-                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[2].pic_link + "  style=\"width:100%;\"></div>" +
-                "<p>" + data[2].song_name + "<br>" + data[2].count + "</p></div>" +
+                    "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[2].pic_link + "  style=\"width:100%;\"></div>" +
+                    "<p>" + data[2].song_name + "<br>" + data[2].count + "</p></div>" +
 
-                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[3].pic_link + "  style=\"width:100%;\"></div>" +
-                "<p>" + data[3].song_name + "<br>" + data[3].count + "</p></div>" +
+                    "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[3].pic_link + "  style=\"width:100%;\"></div>" +
+                    "<p>" + data[3].song_name + "<br>" + data[3].count + "</p></div>" +
 
-                "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[4].pic_link + "  style=\"width:100%;\"></div>" +
-                "<p>" + data[4].song_name + "<br>" + data[4].count + "</p></div>"
+                    "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[4].pic_link + "  style=\"width:100%;\"></div>" +
+                    "<p>" + data[4].song_name + "<br>" + data[4].count + "</p></div>"
+            }
+            else {
+                document.getElementById("top4-title").innerHTML = ""
+                console.log("Not enough data")
+            }
         }
         catch (error) {
             console.log(error)
         }
     }
+
 
 
 </script>
