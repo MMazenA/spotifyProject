@@ -586,8 +586,8 @@ def get_top_four(id):
                 )
 
                 pdf.sort_values(by=["count"], inplace=True, ascending=False)
-                thing = pdf.head(4).to_dict("records")
-                row = np.array(thing)
+                top_four = pdf.head(4).to_dict("records")
+                row = np.array(top_four)
                 numbered_dict = dict(enumerate(row.flatten(), 1))
         except mysql.connector.Error as err1:
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
