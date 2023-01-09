@@ -194,6 +194,36 @@ class get_top_four(Resource):
         return sqlFunc.get_top_four(id)
 
 
+class verify_user(Resource):
+    def post(self, code):
+        try:
+            response = requests.get(
+                "https://api.spotify.com/v1/me",
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {code}",
+                },
+                timeout=5,
+                verify=True,
+            )
+            # print(response)
+            if response.status_code == 403:
+                return {"display_name": "", "id": ""}
+
+            if response.status_code != 200:
+                return {"display_name": "", "id": ""}
+            if response.status_code == 200:
+                return 200
+            else:
+                return 408
+        except requests.exceptions.ReadTimeout as timeout:
+            return 408
+        except requests.exceptions.ConnectionError as err:
+            print("Error: Cannot connect")
+            return self.post(code)
+
+
 api.add_resource(SptfyServer, "/sptfy_server/")
 api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
@@ -207,6 +237,7 @@ api.add_resource(
     get_current_song, "/get_current_song/<id>", endpoint="get_current_song"
 )
 api.add_resource(get_top_four, "/get_top_four/<id>", endpoint="get_top_four")
+api.add_resource(verify_user, "/verify_user/<code>", endpoint="verify_user")
 
 
 if __name__ == "__main__":
