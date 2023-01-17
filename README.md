@@ -17,5 +17,8 @@ Currently being hosted [here](https://mazenmirza.com)
 
 Order| Task |
 ------------------------------------------------: | :--------------------------------------:| 
-1 | Move CSS out of JS | 
-2 | Fix API directories and security|
+1 | Implement verification | 
+2 | Verify at every endpoint|
+3 | Implement delete user|
+4 | Create graph of weekly listening history|
+? | Restart dead threads and fix timeouts|
