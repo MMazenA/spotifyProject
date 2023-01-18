@@ -26,7 +26,12 @@ def main():
                         args=[person["refresh_token"], person["id"]],
                     )
                 )
-                running_thread[len(running_thread) - 1].start()  # starting the thread
+                running_thread[len(running_thread) - 1].start() 
+
+        for i,process in enumerate(running_thread):
+            if not process.is_alive():
+                running_thread.pop(i)
+                currently_tracking.pop(i)
         time.sleep(10)
 
 

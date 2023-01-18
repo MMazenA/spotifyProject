@@ -24,7 +24,8 @@ def main(refresh_token, user_id):
             time.sleep(30)
             listining_info, time_string, response = tracker.get_current_track()
 
-        if listining_info not in ("0", "1"):  # if data is available
+        data_unavailable_codes=["0","1"]
+        if listining_info not in data_unavailable_codes:  
             sleep_timer = 5
             payload = {
                 "song_id": str(listining_info.get("id")),
@@ -50,7 +51,8 @@ def main(refresh_token, user_id):
                 paused_time = 0
                 repeat_unlocked = True
             else:  # if it is same song
-                if start_time + 25 + paused_time < time.time() and repeat_unlocked:
+                playing_for_25 = start_time + 25 + paused_time
+                if playing_for_25 < time.time() and repeat_unlocked:
                     print(time_string, response, "\nAdding 1 to count")
                     repeat_unlocked = False
                     paused_time = 0
@@ -60,11 +62,12 @@ def main(refresh_token, user_id):
                         json=payload,
                         timeout=5,
                     )
+                playing_for_55 = playing_for_25+30
+                song_past_30= listining_info.get("position") < 30000
                 if (
-                    start_time + 25 + 30 + paused_time < time.time()
-                    and listining_info.get("position") < 30000
-                ):  # 30 seconds after a stream is recorded and the song is at the start again, reset the timer and permit count
-
+                    playing_for_55 < time.time()
+                    and song_past_30
+                ):  
                     start_time = time.time() + 5
                     repeat_unlocked = True
                     paused_time = 0
@@ -78,4 +81,4 @@ def main(refresh_token, user_id):
 
 
 if __name__ == "__main__":
-    main(privateinfo.refresh_token(), "lul")
+    main(privateinfo.refresh_token(), "test")
