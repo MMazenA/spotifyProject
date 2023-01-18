@@ -30,7 +30,7 @@
         {% if "True" in item.logged_in%}
         <a class="cta" href="/UserInfo">{{item.display_name}}</a>
         {% else %}
-        <a class="cta" href="/callback">Login</a>
+        <a class="cta" href="/confirm">Login</a>
         {% endif %}
         <p class="menu cta">Menu</p>
         {% endfor %}
@@ -73,17 +73,17 @@
 
 
 
-    var eventSource = new EventSource("/stream/eggzimic");
+    var eventSource = new EventSource("/stream/eggzimic/");
     eventSource.onmessage = function (e) {
         image_div.innerHTML = "<img src='" + JSON.parse(e.data).pic_link + "'/>";
         song_name_div.innerHTML = "<p>" + "<font size=\"+2\"> <strong>" + JSON.parse(e.data).song_name + "</strong></font></p><p>" + JSON.parse(e.data).primary_artist + "</p>"
 
     };
 
-    var eventSource = new EventSource("/stream2/eggzimic");
+    var eventSource = new EventSource("/stream2/eggzimic/");
     eventSource.onmessage = function (e) {
         try {
-            
+
             var data = JSON.parse(e.data)
             top_ten.innerHTML =
                 "<div class=\"img-holder\"><div class=\"column\"><img src=" + data[1].pic_link + "  style=\"width:100%;\"></div>" +

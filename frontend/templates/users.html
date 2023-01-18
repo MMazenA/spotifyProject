@@ -31,7 +31,7 @@
         {% if "True" in item.logged_in%}
         <a class="cta" href="/UserInfo">{{item.display_name}}</a>
         {% else %}
-        <a class="cta" href="/callback">Login</a>
+        <a class="cta" href="/confirm">Login</a>
         {% endif %}
         <p class="menu cta">Menu</p>
         {% endfor %}
@@ -44,7 +44,7 @@
             {% for result in data %}
             <tr>
                 {% for elem in result.names %}
-                <td><a href="/User/{{elem.id}}">{{elem.display_name}} ({{elem.id}})</a></td>
+                <td><a href="/User/{{elem.id}}/">{{elem.display_name}} ({{elem.id}})</a></td>
                 <!-- <td>{{elem.id}}</td> -->
                 <br>
                 {% endfor %}
