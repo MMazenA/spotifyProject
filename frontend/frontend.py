@@ -50,8 +50,8 @@ def getCookies():
         displayUser = ""
     if logged_in is None:
         logged_in = ""
-    if code is None:
-        logged_in = ""
+    # if code is None:
+    #     logged_in = ""
     return [
         {
             "id": userID,
@@ -282,23 +282,31 @@ def about():
     return redirect("https://github.com/MMazenA/spotifyProject")
 
 
-@app.route("/forbidden/")
-def forbidden():
-    cookies_data = getCookies()
-    r = make_response(render_template("accessDenied.html", data=[cookies_data]))
-    return r
-
-
-# @ app.errorhandler(404)
-# def not_found(e):
-#     return render_template("404.html")
-
-
 @app.route("/confirm/")
 def confirm():
     cookies_data = getCookies()
     r = make_response(render_template("confirm.html", data=cookies_data))
     return r
+
+
+@app.errorhandler(403)
+@app.route("/forbidden/")
+def forbidden():
+    cookies_data = getCookies()
+    r = make_response(render_template("accessDenied.html", data=cookies_data))
+    return r, 403
+
+
+@app.errorhandler(404)
+def not_found(e):
+    cookies_data = getCookies()
+    return make_response(render_template("404.html", data=cookies_data)), 404
+
+
+@app.errorhandler(500)
+def not_found(e):
+    cookies_data = getCookies()
+    return make_response(render_template("500.html", data=cookies_data)), 500
 
 
 if __name__ == "__main__":
