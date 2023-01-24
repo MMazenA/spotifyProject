@@ -29,6 +29,7 @@ def main():
                 running_thread[len(running_thread) - 1].start() 
 
         for i,process in enumerate(running_thread):
+            print("Dead Thread Found, removing")
             if not process.is_alive():
                 running_thread.pop(i)
                 currently_tracking.pop(i)
