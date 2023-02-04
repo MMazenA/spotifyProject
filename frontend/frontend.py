@@ -64,6 +64,8 @@ def getCookies():
 
 @app.route("/")
 def root():
+    if "mazenmirza" not in request.root_url:
+        return "405", 405
 
     data = getCookies()
 
@@ -152,7 +154,6 @@ def stream2(id):
                 ).json()
                 # formating because requests.json was turning keys into single quotes
                 data = "data: {}\n\n".format(json.dumps(data))
-                # print(data)
                 yield data
         finally:
             print("Client disconnected stream1")
@@ -257,8 +258,6 @@ def user(user):
 
     return make_response(render_template("userNotFound.html", data=cookies_data))
 
-    return {"name": user}
-
 
 @app.route("/Users/")
 def users():
@@ -271,7 +270,6 @@ def users():
             ).json()["data"]
         }
     )
-    print(data)
 
     r = make_response(render_template("users.html", data=[data]))
     return r
@@ -304,7 +302,7 @@ def not_found(e):
 
 
 @app.errorhandler(500)
-def not_found(e):
+def server_error(e):
     cookies_data = getCookies()
     return make_response(render_template("500.html", data=cookies_data)), 500
 
