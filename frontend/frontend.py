@@ -57,7 +57,7 @@ def getCookies():
             "id": userID,
             "display_name": displayUser,
             "logged_in": logged_in,
-            "code": code,
+            # "code": code,
         }
     ]
 
@@ -188,8 +188,12 @@ def callback():
         return redirect("https://accounts.spotify.com/authorize?" + userauthenticate)
     resp = make_response(redirect(url_for("confirm")))
 
-    for key, value in getCookies():
-        resp.set_cookie(key, value)
+    cookies = getCookies()[0]
+    print(cookies)
+
+    for key in cookies:
+        if cookies[key] != None:
+            resp.set_cookie(key, cookies[key])
     return resp
 
 
@@ -217,12 +221,15 @@ def code():
     else:
         r.set_cookie("logged_in", "True", expires=expire_date)
 
+    # print(r.cookies)
+
     return r
 
 
 @app.route("/UserInfo/")
 def userInfo():
     data = getCookies()
+    print(data)
     if [(x) for x in data[0].values() if x == "" or x == None]:
         resp = make_response(render_template("accessDenied.html", data=data))
         resp.set_cookie("userID", "", expires=1)
