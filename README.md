@@ -1,4 +1,9 @@
 # spotifyProject
+<p align="center">
+  <img src="https://i.imgur.com/EZZMPpi.png" width="400" height="450" />
+</p>
+
+-----
 
 WIP
 Inspo from [gabehassan.com](https://gabehassan.com)
