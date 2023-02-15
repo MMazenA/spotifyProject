@@ -1,4 +1,4 @@
-# spotifyProject
+# [spotifyProject](https://mazenmirza.com)
 <p align="center">
   <img src="https://i.imgur.com/EZZMPpi.png" width="400" height="450" />
 </p>
