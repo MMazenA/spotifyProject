@@ -6,7 +6,7 @@ import single_tracker
 
 
 def main():
-    currently_tracking = set()
+    currently_tracking = []
     running_thread = []
     while True:
         users = requests.get(
@@ -19,7 +19,7 @@ def main():
 
         for person in users.json()["data"]:
             if person["id"] not in currently_tracking:
-                currently_tracking.add(person["id"])
+                currently_tracking.append(person["id"])
                 running_thread.append(
                     Thread(
                         target=single_tracker.main,
@@ -31,8 +31,8 @@ def main():
         for i, process in enumerate(running_thread):
             if not process.is_alive():
                 print("Dead Thread Found, removing")
-                running_thread.pop(i)
-                currently_tracking.pop(i)
+                del running_thread[i]
+                del currently_tracking[i]
         time.sleep(10)
 
 
