@@ -12,9 +12,9 @@ import requests
 # from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 import sqlFunc
-import pythonSQLite
+# import pythonSQLite
 import privateinfo
-import sptfy
+import sql
 
 
 app = Flask(__name__)
@@ -85,19 +85,19 @@ class top_ten(Resource):
         return sqlFunc.top_ten()
 
 
-class SptfyLocal(Resource):
-    """Spotify Local endpoint for insertion and retrival."""
+# class SptfyLocal(Resource):
+#     """Spotify Local endpoint for insertion and retrival."""
 
-    def get(self):
-        """Method to return last row from local database."""
-        return pythonSQLite.last_row()
+#     def get(self):
+#         """Method to return last row from local database."""
+#         return pythonSQLite.last_row()
 
-    def post(self):
-        """Method to insert into local database."""
+#     def post(self):
+#         """Method to insert into local database."""
 
-        args = song_post_args.parse_args()
-        pythonSQLite.data_insert(args)
-        return {"Status": "Sucess"}
+#         args = song_post_args.parse_args()
+#         pythonSQLite.data_insert(args)
+#         return {"Status": "Sucess"}
 
 
 class NewUser(Resource):
@@ -186,12 +186,14 @@ class get_full_users(Resource):
 
 class get_current_song(Resource):
     def get(self, id):
-        return sqlFunc.get_current_song(id)
+        x= sql.SQL()
+        return x.get_current_song(id)
 
 
 class get_top_four(Resource):
     def get(self, id):
-        return sqlFunc.get_top_four(id)
+        x= sql.SQL()
+        return x.get_top_four(id)
 
 
 class verify_user(Resource):
@@ -225,7 +227,7 @@ class verify_user(Resource):
 
 
 api.add_resource(SptfyServer, "/sptfy_server/")
-api.add_resource(SptfyLocal, "/sptfy_local/")
+# api.add_resource(SptfyLocal, "/sptfy_local/")
 api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
 api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
@@ -241,4 +243,4 @@ api.add_resource(verify_user, "/verify_user/<code>", endpoint="verify_user")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=9888, threaded=True)
+    app.run(host="0.0.0.0", port=9889, threaded=True)
