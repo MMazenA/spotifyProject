@@ -17,9 +17,6 @@ class SQL():
                     password=privateinfo.sql_pass(),
                     database=privateinfo.sql_db(),
                     connection_timeout=5,).get_connection()
-        
-
-        return {"data": row}
 
     def get_current_song(self,user_id):
         """Gets the current song someone is listening to given a user_id."""
@@ -31,14 +28,13 @@ class SQL():
                 FROM current_for_all 
                 WHERE user_id=%s;
                 """
-            
+
             cur.execute(sql,(user_id,))
             row = cur.fetchone()
             cur.close()
         except mysql.connector.Error as err1:
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
-
         return {"data": row}
 
     def get_top_four(self, user_id):
@@ -52,7 +48,7 @@ class SQL():
             ORDER BY count DESC 
             LIMIT 4;
         """
-        try: 
+        try:
             cur = self.conn.cursor(dictionary=True)
             cur.execute(sql)
             rows = cur.fetchall()
@@ -60,18 +56,40 @@ class SQL():
 
         except mysql.connector.Error as err1:
             logging.debug(err1)
-        
+
+        if len(rows)<4:
+            filler_row = {'song_id': 'NULL',
+                          'song_name': '', 'artists': '',
+                          'primary_artist': '',
+                          'pic_link':
+                          'https://i.scdn.co/image/ab67616d0000b2734c8974d1d37295694d7d4e8f',
+                          'count': ''}
+            iterations = 4 - len(rows)
+            for i in range(iterations):
+                rows.append(filler_row)
+
         numbered_rows = {}
         for i in enumerate(rows):
             numbered_rows[str(i[0]+1)] = rows[i[0]]
-    
         return numbered_rows
 
+    def get_user_info(self,user_id):
+        """Retrive specific user row from database."""
+        row = ""
+        cur = self.conn.cursor(dictionary=True)
+        try:
+            sql = f"SELECT * FROM `users` WHERE `id`='{user_id}'"
+            cur.execute(sql)
+            row = cur.fetchone()
+            cur.close()
+        except mysql.connector.Error as err1:
+            logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
+            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
+        return row
 
     def get_all_users_safe(self):
         """Get user info besides sensitive information (keys)."""
         rows = ""
-        
         cur = self.conn.cursor(dictionary=True, buffered=True)
         try:
             sql = "SELECT `id`,`display_name` FROM `users`"
@@ -81,9 +99,8 @@ class SQL():
         except mysql.connector.Error as err1:
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
-        
         return {"data": rows}
-        
+
     def get_all_users(self):
         """Get all user information."""
         row = ""
@@ -96,18 +113,9 @@ class SQL():
         except mysql.connector.Error as err1:
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
-        
         return {"data": row}
 
-        
-
-
-
-
-
-
-x =SQL()
-print(x.get_current_song("eggzimic"))
-print(x.get_top_four("eggzimic"))
-
+if __name__=="__main__":
+    x =SQL()
+    print(x.get_top_four("cizox_"))
     
