@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import warnings
 
+# SELECT song_name,COUNT(*) as play_count FROM eggzimic WHERE WEEK(eggzimic.date)=WEEK(CURDATE()) GROUP BY song_id ORDER BY play_count DESC LIMIT 10;
+
 
 def data_insert(payload):
     """Insert data into mySQL database."""

@@ -64,8 +64,8 @@ def getCookies():
 
 @app.route("/")
 def root():
-    if "mazenmirza" not in request.root_url:
-        return "405", 405
+    # if "mazenmirza" not in request.root_url:
+    #     return "405", 405
 
     data = getCookies()
 
@@ -315,4 +315,4 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4443)
+    app.run(host="0.0.0.0", port=25565)
