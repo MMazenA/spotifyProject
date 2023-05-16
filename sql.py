@@ -114,7 +114,6 @@ class SQL():
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
         return {"data": row}
-    
 
     def update_current_tracker(self,payload):
         """Updates the current song that someone is currently listening to."""
@@ -136,19 +135,20 @@ class SQL():
 
         val = (
             [user_id]+
-            tuple(payload)+ 
+            tuple(payload)+
             tuple(payload)
             )
-   
+
         cur = self.conn.cursor()
         try:
             cur.execute(sql, val)
             self.conn.commit()
             cur.close()
         except mysql.connector.Error as sqlerr1:
-            logging.debug("Insert Error: Values: ", payload,sqlerr1,sql)
+            errors = [payload,sqlerr1,sql]
+            logging.debug("Insert Error: Values: ", errors)
 
-    def insert_into_dynamic(self,id, payload):
+    def insert_into_dynamic(self,user_id, payload):
         """Create dynamic table based on ID. Does not overwrite pre-existing table"""
         payload = list(payload.values())
 
@@ -158,7 +158,7 @@ class SQL():
         `pic_link`)
         VALUES(%s,%s,%s,%s,%s,%s,%s)
         """.format(
-            id
+            user_id
         )
         cur = self.conn.cursor()
         try:
@@ -166,8 +166,8 @@ class SQL():
             self.conn.commit()
             cur.close()
         except mysql.connector.Error as sqlerr1:
-            logging.debug("Insert Error: Values: ", payload,sqlerr1,sql)
-
+            errors = [payload,sqlerr1,sql]
+            logging.debug("Insert Error: Values: ", errors)
 
     def make_current_tracker_table(self):
         """Create dynamic table based on ID. Does not overwrite pre-existing table"""
@@ -195,12 +195,12 @@ class SQL():
         except mysql.connector.Error as err1:
             logging.debug("ERROR: Unable to create current tracker table.", err1)
 
-    def make_table(self,id):
+    def make_table(self,user_id):
         """Create dynamic table based on ID. Does not overwrite pre-existing table"""
         cur = self.conn.cursor(dictionary=True)
         try:
             sql = (
-                """CREATE TABLE IF NOT EXISTS  `%s` (
+                """CREATE TABLE IF NOT EXISTS  `{}` (
                     `song_id` varchar(50) NOT NULL,
                     `song_name` text NOT NULL,
                     `artists` text DEFAULT NULL,
@@ -211,8 +211,7 @@ class SQL():
                     `date` datetime NOT NULL DEFAULT current_timestamp(),
                     UNIQUE KEY `date`(`date`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
-                % id
-            )
+            ).format(user_id)
             cur.execute(sql)
             self.conn.commit()
             cur.close()
@@ -220,14 +219,8 @@ class SQL():
             logging.debug("ERROR: Unable to create user table", err1)
             raise Exception("ERROR: Unable to create user table", err1) from err1
 
-
-
-
 if __name__=="__main__":
     x =SQL()
     print(x.get_top_four("cizox_"))
     print(x.get_user_info("eggzimic"))
-
-
-
     
