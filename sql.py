@@ -114,11 +114,41 @@ class SQL():
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
         return {"data": row}
+    
+    def add_user(self,id, display_name, refresh_token):
+        """Create a new user in database."""
+
+        sql = """INSERT INTO `users`
+                (`id`, `display_name`, `refresh_token`)
+                VALUES('%s',"%s","%s")
+                ON DUPLICATE KEY UPDATE
+                `id`='%s' """ % (
+            tuple((id, display_name, refresh_token, id))
+        )
+
+        
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except mysql.connector.Error as sqlerr1:
+            logging.debug("Insert Error: Values: ", id, display_name, refresh_token, id)
+            logging.debug(sqlerr1)
+            logging.debug(sql)
+            return False
+        return True
 
     def update_current_tracker(self,payload):
         """Updates the current song that someone is currently listening to."""
         user_id = payload[0]
         payload = list(payload[1].values())
+
+        val = (
+            tuple([user_id])+
+            tuple(payload)+
+            tuple(payload)
+            )
 
         sql = """INSERT INTO `current_for_all`
         (`user_id`,`song_id`, `song_name`, `artists`, `primary_artist`,
@@ -131,17 +161,11 @@ class SQL():
         `primary_artist`=%s,
         `song_length`=%s,
         `current_play_time`=%s,
-        `pic_link`=%s"""
-
-        val = (
-            [user_id]+
-            tuple(payload)+
-            tuple(payload)
-            )
+        `pic_link`=%s""" 
 
         cur = self.conn.cursor()
         try:
-            cur.execute(sql, val)
+            cur.execute(sql,val)
             self.conn.commit()
             cur.close()
         except mysql.connector.Error as sqlerr1:

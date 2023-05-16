@@ -11,7 +11,7 @@ import requests
 # from flask_limiter import Limiter
 # from flask_limiter.util import get_remote_address
 from flask_cors import CORS
-import sqlFunc
+# import sqlFunc
 # import pythonSQLite
 import privateinfo
 import sql
@@ -21,6 +21,7 @@ app = Flask(__name__)
 api = Api(app)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
+SQL = sql.SQL()
 
 song_post_args = reqparse.RequestParser()
 song_post_args.add_argument("song_id", type=str, help="Song data")
@@ -44,45 +45,45 @@ insert_post_args.add_argument("current_play_time", type=str, help="Song data")
 insert_post_args.add_argument("pic_link", type=str, help="Song data")
 
 
-class SptfyServer(Resource):
-    """Spotify Server endpoint for insertion and retrival."""
+# class SptfyServer(Resource):
+#     """Spotify Server endpoint for insertion and retrival."""
 
-    def get(self):
-        """Method to return data from cloud sql database."""
-        return {"data": sqlFunc.last_row()}
+#     def get(self):
+#         """Method to return data from cloud sql database."""
+#         return {"data": sqlFunc.last_row()}
 
-    def post(self):
-        """Method to insert into sql database"""
-        args = song_post_args.parse_args()
+#     def post(self):
+#         """Method to insert into sql database"""
+#         args = song_post_args.parse_args()
 
-        sqlFunc.data_insert(args)
-        return {"Status": "Sucess"}
+#         sqlFunc.data_insert(args)
+#         return {"Status": "Sucess"}
 
 
 class weekly_counter(Resource):
     def post(self, user_id):
         args = insert_post_args.parse_args()
-        sqlFunc.insert_into_dynamic(user_id, args)
+        SQL.insert_into_dynamic(user_id, args)
 
-    def get(self, user_id):
-        return sqlFunc.get_last_week(user_id)
-
-
-class locateSong(Resource):
-    """Spotify Server endpoint for locating a specific song."""
-
-    def get(self):
-        """Method to return data from cloud sql database."""
-        args = request.args
-        return sqlFunc.locate(args["song_id"])
+    # def get(self, user_id):
+    #     return sqlFunc.get_last_week(user_id)
 
 
-class top_ten(Resource):
-    """End point that returns top 10 most listened to songs."""
+# class locateSong(Resource):
+#     """Spotify Server endpoint for locating a specific song."""
 
-    def get(self):
-        """Method to return data from cloud sql database."""
-        return sqlFunc.top_ten()
+#     def get(self):
+#         """Method to return data from cloud sql database."""
+#         args = request.args
+#         return sqlFunc.locate(args["song_id"])
+
+
+# class top_ten(Resource):
+#     """End point that returns top 10 most listened to songs."""
+
+#     def get(self):
+#         """Method to return data from cloud sql database."""
+#         return sqlFunc.top_ten()
 
 
 # class SptfyLocal(Resource):
@@ -160,8 +161,8 @@ class NewUser(Resource):
             return 408
 
     def add_user(self, id, display_name, refresh_token):
-        if sqlFunc.add_user(id, display_name, refresh_token):
-            sqlFunc.make_table(id)
+        if SQL.add_user(id, display_name, refresh_token):
+            SQL.make_table(id)
 
             return 200
         else:
@@ -171,29 +172,27 @@ class NewUser(Resource):
 class get_user(Resource):
     def get(self, id):
         if id is not None:
-            return sqlFunc.get_user_info(id)
+            return SQL.get_user_info(id)
 
 
 class get_all_users(Resource):
     def get(self):
-        return sqlFunc.get_all_users_safe()
+        return SQL.get_all_users_safe()
 
 
 class get_full_users(Resource):
     def get(self):
-        return sqlFunc.get_all_users()
+        return SQL.get_all_users()
 
 
 class get_current_song(Resource):
     def get(self, id):
-        x= sql.SQL()
-        return x.get_current_song(id)
+        return SQL.get_current_song(id)
 
 
 class get_top_four(Resource):
     def get(self, id):
-        x= sql.SQL()
-        return x.get_top_four(id)
+        return SQL.get_top_four(id)
 
 
 class verify_user(Resource):
@@ -226,10 +225,10 @@ class verify_user(Resource):
             return self.post(code)
 
 
-api.add_resource(SptfyServer, "/sptfy_server/")
+# api.add_resource(SptfyServer, "/sptfy_server/")
 # api.add_resource(SptfyLocal, "/sptfy_local/")
-api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
-api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
+# api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
+# api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 api.add_resource(get_user, "/user/<id>", endpoint="user")
 api.add_resource(get_all_users, "/allusers/", endpoint="allusers")
@@ -243,4 +242,4 @@ api.add_resource(verify_user, "/verify_user/<code>", endpoint="verify_user")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=9889, threaded=True)
+    app.run(host="0.0.0.0", port=9888, threaded=True)
