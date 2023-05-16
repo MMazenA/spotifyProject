@@ -33,7 +33,8 @@ def main():
                 print("Dead Thread Found, removing")
                 del running_thread[i]
                 del currently_tracking[i]
-        time.sleep(10)
+        restart_timer = 60
+        time.sleep(restart_timer)
 
 
 if __name__ == "__main__":

@@ -78,8 +78,8 @@ class SQL():
         row = ""
         cur = self.conn.cursor(dictionary=True)
         try:
-            sql = f"SELECT * FROM `users` WHERE `id`='{user_id}'"
-            cur.execute(sql)
+            sql = "SELECT * FROM `users` WHERE `id`=%s"
+            cur.execute(sql,(user_id,))
             row = cur.fetchone()
             cur.close()
         except mysql.connector.Error as err1:
@@ -114,8 +114,120 @@ class SQL():
             logging.debug(Exception("ERROR: Unable to retrive requested row", err1))
             raise Exception("ERROR: Unable to retrive requested row", err1) from err1
         return {"data": row}
+    
+
+    def update_current_tracker(self,payload):
+        """Updates the current song that someone is currently listening to."""
+        user_id = payload[0]
+        payload = list(payload[1].values())
+
+        sql = """INSERT INTO `current_for_all`
+        (`user_id`,`song_id`, `song_name`, `artists`, `primary_artist`,
+        `song_length`, `current_play_time`,
+        `pic_link`)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s)  ON DUPLICATE KEY UPDATE
+        `song_id`=%s,
+        `song_name`=%s,
+        `artists`=%s,
+        `primary_artist`=%s,
+        `song_length`=%s,
+        `current_play_time`=%s,
+        `pic_link`=%s"""
+
+        val = (
+            [user_id]+
+            tuple(payload)+ 
+            tuple(payload)
+            )
+   
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql, val)
+            self.conn.commit()
+            cur.close()
+        except mysql.connector.Error as sqlerr1:
+            logging.debug("Insert Error: Values: ", payload,sqlerr1,sql)
+
+    def insert_into_dynamic(self,id, payload):
+        """Create dynamic table based on ID. Does not overwrite pre-existing table"""
+        payload = list(payload.values())
+
+        sql = """INSERT INTO {}
+        (`song_id`, `song_name`, `artists`, `primary_artist`,
+        `song_length`, `current_play_time`,
+        `pic_link`)
+        VALUES(%s,%s,%s,%s,%s,%s,%s)
+        """.format(
+            id
+        )
+        cur = self.conn.cursor()
+        try:
+            cur.execute(sql, tuple(payload))
+            self.conn.commit()
+            cur.close()
+        except mysql.connector.Error as sqlerr1:
+            logging.debug("Insert Error: Values: ", payload,sqlerr1,sql)
+
+
+    def make_current_tracker_table(self):
+        """Create dynamic table based on ID. Does not overwrite pre-existing table"""
+        cur = self.conn.cursor(dictionary=True)
+        try:
+            sql = """CREATE TABLE IF NOT EXISTS `current_for_all` (
+                `user_id` varchar(200),
+                `song_id` varchar(50) NOT NULL,
+                `song_name` text NOT NULL,
+                `artists` text DEFAULT NULL,
+                `primary_artist` text DEFAULT NULL,
+                `song_length` text DEFAULT NULL,
+                `current_play_time` text DEFAULT NULL,
+                `pic_link` text DEFAULT NULL,
+                PRIMARY KEY (user_id),
+                CONSTRAINT `user_id_lock`
+                    FOREIGN KEY (user_id) REFERENCES users (id)
+                    ON DELETE CASCADE
+                    ON UPDATE RESTRICT
+                
+                ) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;"""
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except mysql.connector.Error as err1:
+            logging.debug("ERROR: Unable to create current tracker table.", err1)
+
+    def make_table(self,id):
+        """Create dynamic table based on ID. Does not overwrite pre-existing table"""
+        cur = self.conn.cursor(dictionary=True)
+        try:
+            sql = (
+                """CREATE TABLE IF NOT EXISTS  `%s` (
+                    `song_id` varchar(50) NOT NULL,
+                    `song_name` text NOT NULL,
+                    `artists` text DEFAULT NULL,
+                    `primary_artist` text DEFAULT NULL,
+                    `song_length` text DEFAULT NULL,
+                    `current_play_time` text DEFAULT NULL,
+                    `pic_link` text DEFAULT NULL,
+                    `date` datetime NOT NULL DEFAULT current_timestamp(),
+                    UNIQUE KEY `date`(`date`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"""
+                % id
+            )
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except mysql.connector.Error as err1:
+            logging.debug("ERROR: Unable to create user table", err1)
+            raise Exception("ERROR: Unable to create user table", err1) from err1
+
+
+
 
 if __name__=="__main__":
     x =SQL()
     print(x.get_top_four("cizox_"))
+    print(x.get_user_info("eggzimic"))
+
+
+
     
