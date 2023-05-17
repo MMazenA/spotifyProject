@@ -17,6 +17,8 @@ class SQL():
                     password=privateinfo.sql_pass(),
                     database=privateinfo.sql_db(),
                     connection_timeout=5,).get_connection()
+        
+
 
     def get_current_song(self,user_id):
         """Gets the current song someone is listening to given a user_id."""
