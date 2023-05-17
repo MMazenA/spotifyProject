@@ -61,12 +61,13 @@ def getCookies():
         }
     ]
 
-
-@app.route("/")
-def root():
+@app.before_request
+def check_request_url():
     if "mazenmirza" not in request.root_url:
         return "405", 405
 
+@app.route("/")
+def root():
     data = getCookies()
 
     r = make_response(render_template("index.html", data=data))
@@ -315,4 +316,4 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4443)
+    app.run(host="0.0.0.0", port=25565)

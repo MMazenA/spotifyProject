@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import warnings
 
+# SELECT song_name,COUNT(*) as play_count FROM eggzimic WHERE WEEK(eggzimic.date)=WEEK(CURDATE()) GROUP BY song_id ORDER BY play_count DESC LIMIT 10;
+
 
 def data_insert(payload):
     """Insert data into mySQL database."""
@@ -353,42 +355,6 @@ def insert_into_dynamic(id, payload):
     except mysql.connector.Error as sqlerr:
         print("Unable to connect to database: ", sqlerr)
 
-
-def get_last_week(id):
-    """Retrive last week listening history based on ID"""
-
-    row = ""
-    try:
-
-        mydb = mysql.connector.connect(
-            host=privateinfo.sql_host(),
-            user=privateinfo.sql_user(),
-            password=privateinfo.sql_pass(),
-            database=privateinfo.sql_db(),
-            connection_timeout=5,
-        )
-        cur = mydb.cursor(dictionary=True, buffered=True)
-
-        try:
-            sql = """SELECT * 
-                FROM `%s` 
-                WHERE DATE_ADD(`date`, INTERVAL 7 DAY) >= NOW();""" % (
-                id
-            )
-            cur.execute(sql)
-            row = cur.fetchall()
-            cur.close()
-            mydb.close()
-
-            rows = np.array(row)
-
-        except mysql.connector.Error as err1:
-            raise Exception("ERROR: Unable to retrive requested row", err1) from err1
-
-    except mysql.connector.Error as err:
-        raise Exception("ERROR: Unable to connect to database", err) from err
-
-    return rows
 
 
 def make_current_tracker_table():

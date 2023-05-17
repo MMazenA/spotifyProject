@@ -4,12 +4,16 @@ import time
 import requests
 import sptfy
 import privateinfo
-import sqlFunc
+import logging
+import sql
 
 
 def main(refresh_token, user_id):
     """Spotfiy tracker for single user and paramtized refresh token and user ID, saves only to server."""
-
+    logger = logging.getLogger(__name__)
+    log_format = "[%(asctime)s] [%(filename)s:%(lineno)s - %(funcName)15s()] %(message)s"
+    logging.basicConfig(filename="logs/tracker.log", level=logging.INFO,format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
+    sql_func = sql.SQL()
     repeat_unlocked = True
     paused_time = 0
     last_id = 0
@@ -20,7 +24,7 @@ def main(refresh_token, user_id):
     while True:
         listining_info, time_string, response = tracker.get_current_track()
         while response == 408:
-            print("Connection timeout, attempting to reconnect")
+            logger.debug("Connection timeout, attempting to reconnect")
             time.sleep(30)
             listining_info, time_string, response = tracker.get_current_track()
 
@@ -40,11 +44,11 @@ def main(refresh_token, user_id):
                 paused_time += 4
 
             if listining_info.get("id") != last_id:  # if song is different
-                print(
+                logger.info([user_id,
                     time_string,
                     response,
                     "\ndifferent song streaming now\n",
-                    listining_info,
+                    listining_info]
                 )
                 last_id = listining_info.get("id")
                 start_time = time.time()
@@ -53,7 +57,7 @@ def main(refresh_token, user_id):
             else:  # if it is same song
                 playing_for_25 = start_time + 25 + paused_time
                 if playing_for_25 < time.time() and repeat_unlocked:
-                    print(time_string, response, "\nAdding 1 to count")
+                    logger.info([user_id,time_string, response, "\nAdding 1 to count"])
                     repeat_unlocked = False
                     paused_time = 0
                     requests.post(
@@ -71,9 +75,9 @@ def main(refresh_token, user_id):
                     start_time = time.time() + 5
                     repeat_unlocked = True
                     paused_time = 0
-                    print("unlocked")
+                    logger.info([user_id,"unlocked"])
 
-                sqlFunc.update_current_tracker(list((user_id, payload)))
+                sql_func.update_current_tracker(list((user_id, payload)))
 
         else:
             sleep_timer = 29
@@ -81,4 +85,4 @@ def main(refresh_token, user_id):
 
 
 if __name__ == "__main__":
-    main(privateinfo.refresh_token(), "test")
+    main(privateinfo.refresh_token(), "eggzimic")

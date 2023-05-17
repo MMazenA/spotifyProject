@@ -6,7 +6,6 @@ privateinfo.py
 env/
 testing/
 tracker.db
-logs/
 spotifyTracker.egg-info
 .uwsgi_plugins_builder
 t/
