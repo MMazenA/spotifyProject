@@ -61,12 +61,13 @@ def getCookies():
         }
     ]
 
+@app.before_request
+def check_request_url():
+    if "mazenmirza" not in request.root_url:
+        return "405", 405
 
 @app.route("/")
 def root():
-    # if "mazenmirza" not in request.root_url:
-    #     return "405", 405
-
     data = getCookies()
 
     r = make_response(render_template("index.html", data=data))
