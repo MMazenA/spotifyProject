@@ -4,7 +4,6 @@ import time
 import requests
 import sptfy
 import privateinfo
-import sqlFunc
 import logging
 import sql
 

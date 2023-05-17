@@ -29,7 +29,7 @@ class DBC(metaclass=Singleton):
                     "database":kwargs["database"],
                     "connection_timeout":kwargs["connection_timeout"],
             }
-            self._mydb = mysql.connector.pooling.MySQLConnectionPool(pool_name = "mypool",pool_size = 6, **db_config)
+            self._mydb = mysql.connector.pooling.MySQLConnectionPool(pool_name = "db_pool",pool_size = 6, **db_config)
 
         except mysql.connector.Error as sqlerr:
             print("Unable to connect to database: ", sqlerr)

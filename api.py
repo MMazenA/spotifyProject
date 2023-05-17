@@ -225,10 +225,6 @@ class verify_user(Resource):
             return self.post(code)
 
 
-# api.add_resource(SptfyServer, "/sptfy_server/")
-# api.add_resource(SptfyLocal, "/sptfy_local/")
-# api.add_resource(locateSong, "/locate_song/", endpoint="locate_song")
-# api.add_resource(top_ten, "/top_ten/", endpoint="top_ten")
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 api.add_resource(get_user, "/user/<id>", endpoint="user")
 api.add_resource(get_all_users, "/allusers/", endpoint="allusers")
