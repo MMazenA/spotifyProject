@@ -37,4 +37,14 @@ class DBC(metaclass=Singleton):
     def get_connection(self) -> mysql.connector.connect: 
         """Returns database connection or makes one"""
         return self._mydb.get_connection()
+    
+    def release_connection(self, connection: mysql.connector.connect):
+        """Releases database connection"""
+        connection.close()
 
+    def __enter__(self):
+        self._connection = self.get_connection()
+        return self._connection
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.release_connection(self._connection)
