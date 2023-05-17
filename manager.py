@@ -8,6 +8,7 @@ import single_tracker
 def main():
     currently_tracking = []
     running_thread = []
+    restart_timer = 60
     while True:
         users = requests.get(
             privateinfo.api_host() + "get_full_users/",
@@ -15,7 +16,8 @@ def main():
             timeout=5,
         )
         if users.status_code != 200:
-            raise requests.exceptions.ConnectionError
+            time.sleep(restart_timer)
+            continue
 
         for person in users.json()["data"]:
             if person["id"] not in currently_tracking:
@@ -33,7 +35,6 @@ def main():
                 print("Dead Thread Found, removing")
                 del running_thread[i]
                 del currently_tracking[i]
-        restart_timer = 60
         time.sleep(restart_timer)
 
 
