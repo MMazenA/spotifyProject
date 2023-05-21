@@ -5,12 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-
 </head>
 
 <body>
     <header>
-
         <nav>
             <ul class="nav__links">
                 {% for item in data %}
@@ -33,20 +31,12 @@
         {% endif %}
         <p class="menu cta">Menu</p>
         {% endfor %}
-
     </header>
 
-    <div style="min-height: 94vh" class="center-screen">
-        <div>
-            <font size=40px FONT COLOR="WHITE"><strong>
-                    <p>404</p>
-                    <p>User Not Found</p>
-                    <br>
-                    <p style="font-size: 30px;" FONT COLOR="WHITE">How did you even get here?</p>
-                </strong></font>
-        </div>
-
+    <div id="content">
+        {% block content %}
+        {% endblock %}
     </div>
-</body>
 
+</body>
 </html>

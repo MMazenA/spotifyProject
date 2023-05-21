@@ -39,6 +39,12 @@ def verify_user():
         return True
 
 
+@app.before_request
+def check_request_url():
+    if "mazenmirza" not in request.root_url:
+        return "405", 405
+
+
 def getCookies():
     userID = request.cookies.get("userID")
     displayUser = request.cookies.get("displayUser")
@@ -61,10 +67,22 @@ def getCookies():
         }
     ]
 
-@app.before_request
-def check_request_url():
-    if "mazenmirza" not in request.root_url:
-        return "405", 405
+
+@app.route("/home")
+def lul():
+    data = getCookies()
+
+    r = make_response(render_template("homepage.html", data=data))
+    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    # r.headers.setlist('Content-Security-Policy', [
+    #     "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"])
+
+    r.headers.set("X-Content-Type-Options", "nosniff")
+    r.headers.set("X-XSS-Protection", "1; mode=block")
+    r.headers.set("X-Frame-Options", "SAMEORIGIN")
+    r.headers.set("Access-Control-Allow-Methods", "GET")
+
+    return r
 
 @app.route("/")
 def root():
@@ -316,4 +334,4 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=25565)
+    app.run(host="0.0.0.0", port=4443)
