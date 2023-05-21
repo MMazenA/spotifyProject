@@ -39,10 +39,10 @@ def verify_user():
         return True
 
 
-@app.before_request
-def check_request_url():
-    if "mazenmirza" not in request.root_url:
-        return "405", 405
+# @app.before_request
+# def check_request_url():
+#     if "mazenmirza" not in request.root_url:
+#         return "405", 405
 
 
 def getCookies():
@@ -83,6 +83,7 @@ def lul():
     r.headers.set("Access-Control-Allow-Methods", "GET")
 
     return r
+
 
 @app.route("/")
 def root():
@@ -133,9 +134,7 @@ def stream(id):
                 data = requests.get(
                     "http://localhost:9888" + "/get_current_song/" + id, timeout=5
                 ).json()["data"]
-                # formating because requests.json was turning keys into single quotes
                 data = "data: {}\n\n".format(json.dumps(data))
-                # data = data.replace("'", '"')
                 yield data
         finally:
             print("Client disconnected stream1")

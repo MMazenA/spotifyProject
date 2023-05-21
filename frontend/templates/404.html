@@ -1,53 +1,17 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+{% extends "template.html" %}
 
-</head>
+{% block title %}Home{% endblock %}
 
-<body>
-    <header>
-
-        <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
-        <nav>
-            <ul class="nav__links">
-                {% for item in data %}
-                {% if "True" in item.logged_in%}
-                <li><a href="/User/{{item.id}}">Home</a></li>
-                {% else %}
-                <li><a href="/">Home</a></li>
-
-                {% endif %}
-                {% endfor %}
-                <li><a href="/about">GitHub</a></li>
-                <li><a href="/Users">Users</a></li>
-            </ul>
-        </nav>
-        {% for item in data %}
-        {% if "True" in item.logged_in%}
-        <a class="cta" href="/UserInfo">{{item.display_name}}</a>
-        {% else %}
-        <a class="cta" href="/confirm">Login</a>
-        {% endif %}
-        <p class="menu cta">Menu</p>
-        {% endfor %}
-
-    </header>
-
-    <div style="min-height: 94vh" class="center-screen">
-        <div>
-            <font size=40px FONT COLOR="WHITE"><strong>
-                    <p>404</p>
-                    <p>Not Found</p>
-                    <br>
-                    <p style="font-size: 30px;" FONT COLOR="WHITE">??????</p>
-                </strong></font>
-        </div>
-
+{% block content %}
+<div style="min-height: 94vh" class="center-screen">
+    <div>
+        <font size=40px FONT COLOR="WHITE"><strong>
+                <p>404</p>
+                <p>Not Found</p>
+                <br>
+                <p style="font-size: 30px;" FONT COLOR="WHITE">??????</p>
+            </strong></font>
     </div>
-</body>
-
-</html>
+</div>
+{% endblock %}

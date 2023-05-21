@@ -1,44 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "template.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% block title %}Home{% endblock %}
 
-<body>
-    <header>
-
-        <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
-
-
-        <nav>
-            <ul class="nav__links">
-                {% for item in data %}
-                {% if "True" in item.logged_in%}
-                <li><a href="/User/{{item.id}}">Home</a></li>
-                {% else %}
-                <li><a href="/">Home</a></li>
-
-                {% endif %}
-                {% endfor %}
-                <li><a href="/about">GitHub</a></li>
-                <li><a href="/Users">Users</a></li>
-            </ul>
-        </nav>
-        {% for item in data %}
-        {% if "True" in item.logged_in%}
-        <a class="cta" href="/UserInfo">{{item.display_name}}</a>
-        {% else %}
-        <a class="cta" href="/confirm">Login</a>
-        {% endif %}
-        <p class="menu cta">Menu</p>
-        {% endfor %}
-
-    </header>
-
-
+{% block content %}
     <div class="center-screen">
         <div id="song_name_div" class="center-screen2">
             {% for result in data %}
@@ -51,13 +15,5 @@
             </tr>
             {% endfor %}
         </div>
-
-
     </div>
-</body>
-
-
-
-
-
-</html>
+{% endblock %}

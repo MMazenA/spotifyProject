@@ -1,55 +1,14 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% extends "template.html" %}
 
-<body>
-    <header>
+{% block title %}Home{% endblock %}
 
-        <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
-        <nav>
-            <ul class="nav__links">
-                {% for item in data %}
-                {% if "True" in item.logged_in%}
-                <li><a href="/User/{{item.id}}">Home</a></li>
-                {% else %}
-                <li><a href="/">Home</a></li>
-
-                {% endif %}
-                {% endfor %}
-                <li><a href="/about">GitHub</a></li>
-                <li><a href="/Users">Users</a></li>
-            </ul>
-        </nav>
-        {% for item in data %}
-        {% if "True" in item.logged_in%}
-        <a class="cta" href="/log_out">logout</a>
-        {% else %}
-        <a class="cta" href="/confirm">Login</a>
-        {% endif %}
-        <p class="menu cta">Menu</p>
+{% block content %}
+<ul>
+    {% for item in data %}
+    <FONT COLOR="WHITE">
+        <li>{{item.display_name}}</li>
+        <li>{{item.id}}</li>
         {% endfor %}
-
-    </header>
-
-    <ul>
-        {% for item in data %}
-        <FONT COLOR="WHITE">
-            <li>{{item.display_name}}</li>
-            <li>{{item.id}}</li>
-            {% endfor %}
-    </ul>
-
-</body>
-
-
-
-
-
-
-
-</html>
+</ul>
+{% endblock %}

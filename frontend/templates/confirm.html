@@ -1,65 +1,29 @@
-<!DOCTYPE html>
-<html>
+{% extends "template.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content=", shrink-to-fit=yes, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+{% block title %}Home{% endblock %}
 
-</head>
+{% block content %}
 
-<body>
-    <header>
+<div style="min-height: 85vh" class="center-screen">
+    <div>
+        <font size="+3" FONT COLOR="WHITE"><strong>
+                <p>I agree to having my weekly listening data saved</p>
+                <p>I agree that this data will become public to anyone who views the website</p>
+                <font size="+2" FONT COLOR="WHITE"><strong>
+                        <br>
+                        <p>By clicking next, I agree to these terms and conditions</p>
+                        <br><br>
+                        <a href="/callback">Next</a>
 
-        <!-- <a class="logo" href="/"><img src="{{ url_for('static', filename='l.svg') }}" alt="logo"></a> -->
-
-        <nav>
-            <ul class="nav__links">
-                {% for item in data %}
-                {% if "True" in item.logged_in%}
-                <li><a href="/User/{{item.id}}">Home</a></li>
-                {% else %}
-                <li><a href="/">Home</a></li>
-
-                {% endif %}
-                {% endfor %}
-                <li><a href="/about">GitHub</a></li>
-                <li><a href="/Users">Users</a></li>
-            </ul>
-        </nav>
-        {% for item in data %}
-        {% if "True" in item.logged_in%}
-        <a class="cta" href="/UserInfo">{{item.display_name}}</a>
-        {% else %}
-        <a class="cta" href="/confirm">Login</a>
-        {% endif %}
-        <p class="menu cta">Menu</p>
-        {% endfor %}
-
-    </header>
-
-    <div style="min-height: 85vh" class="center-screen">
-        <div>
-            <font size="+3" FONT COLOR="WHITE"><strong>
-                    <p>I agree to having my weekly listening data saved</p>
-                    <p>I agree that this data will become public to anyone who views the website</p>
-                    <font size="+2" FONT COLOR="WHITE"><strong>
-                            <br>
-                            <p>By clicking next, I agree to these terms and conditions</p>
-                            <br><br>
-                            <a href="/callback">Next</a>
-
-                        </strong></font>
-                </strong></font>
-        </div>
+                    </strong></font>
+            </strong></font>
     </div>
-    <font size="+2" FONT COLOR="WHITE">
-        <div style="min-height: 5vh" class="center-screen">
-            <br>
-            Note: Because the service is still in beta, only authorized
-            users are allowed to sign up
-        </div>
-    </font>
-</body>
-
-</html>
+</div>
+<font size="+2" FONT COLOR="WHITE">
+    <div style="min-height: 5vh" class="center-screen">
+        <br>
+        Note: Because the service is still in beta, only authorized
+        users are allowed to sign up
+    </div>
+</font>
+{% endblock %}
