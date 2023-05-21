@@ -1,9 +1,6 @@
 requests
-click
-setuptools
-mysql.connector
+mysql-connector-python
 Flask
 Flask-RESTful 
 flask_sse
 Flask-WTF
-numpy

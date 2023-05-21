@@ -30,7 +30,7 @@ class SQL:
         """Gets the current song someone is listening to given a user_id."""
         row = ""
         with DBC.DBC() as conn:
-            cur = conn.cursor(dictionary=True)
+            cur = conn.cursor(dictionary=True, buffered=True)
             try:
                 sql = """
                     SELECT song_id,song_name,artists,primary_artist,song_length,current_play_time,pic_link 
