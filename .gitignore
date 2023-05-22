@@ -9,3 +9,4 @@ tracker.db
 spotifyTracker.egg-info
 .uwsgi_plugins_builder
 t/
+salt.py

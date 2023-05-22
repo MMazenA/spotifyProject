@@ -9,6 +9,7 @@ from flask import (
     request,
     session,
     url_for,
+    g,
 )
 import requests
 from flask_sse import sse
@@ -17,6 +18,8 @@ import time
 import json
 import datetime
 import os
+import hashlib
+import salt
 
 
 app = Flask(__name__)
@@ -24,13 +27,7 @@ csrf = CSRFProtect(app)
 app.secret_key = os.urandom(24)
 expire_date = datetime.datetime.now()
 expire_date = expire_date + datetime.timedelta(days=30)
-
-
-def get_time():
-    """gives current time for stream"""
-    time.sleep(1)
-    s = time.ctime(time.time())
-    return s
+USER_VERIFICATION = {}
 
 
 def verify_user():
@@ -45,6 +42,13 @@ def verify_user():
 #         return "405", 405
 
 
+def check_user_verification():
+    cookies = getCookies()[0]
+    if USER_VERIFICATION.get(cookies.get("userID")) != cookies.get("code"):
+        r = redirect(url_for("log_out"))
+        return r
+
+
 def getCookies():
     userID = request.cookies.get("userID")
     displayUser = request.cookies.get("displayUser")
@@ -56,33 +60,34 @@ def getCookies():
         displayUser = ""
     if logged_in is None:
         logged_in = ""
-    # if code is None:
-    #     logged_in = ""
+    if code is None:
+        code = ""
+
     return [
         {
             "id": userID,
             "display_name": displayUser,
             "logged_in": logged_in,
-            # "code": code,
+            "code": code,
         }
     ]
 
 
-@app.route("/home")
-def lul():
-    data = getCookies()
+# @app.route("/home")
+# def lul():
+#     data = getCookies()
 
-    r = make_response(render_template("homepage.html", data=data))
-    r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-    # r.headers.setlist('Content-Security-Policy', [
-    #     "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"])
+#     r = make_response(render_template("homepage.html", data=data))
+#     r.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+#     # r.headers.setlist('Content-Security-Policy', [
+#     #     "default-src 'self'; script-src 'sha256-F3mlFMaf/xZfaa9cAHii6pyBcI8dcn2MQSlm6GG+Vc0='; img-src https://i.scdn.co/; style-src 'self' 'unsafe-inline'"])
 
-    r.headers.set("X-Content-Type-Options", "nosniff")
-    r.headers.set("X-XSS-Protection", "1; mode=block")
-    r.headers.set("X-Frame-Options", "SAMEORIGIN")
-    r.headers.set("Access-Control-Allow-Methods", "GET")
+#     r.headers.set("X-Content-Type-Options", "nosniff")
+#     r.headers.set("X-XSS-Protection", "1; mode=block")
+#     r.headers.set("X-Frame-Options", "SAMEORIGIN")
+#     r.headers.set("Access-Control-Allow-Methods", "GET")
 
-    return r
+#     return r
 
 
 @app.route("/")
@@ -207,7 +212,6 @@ def callback():
     resp = make_response(redirect(url_for("confirm")))
 
     cookies = getCookies()[0]
-    print(cookies)
 
     for key in cookies:
         if cookies[key] != None:
@@ -237,15 +241,18 @@ def code():
     ):
         r.set_cookie("logged_in", "False", expires=expire_date)
     else:
+        code = hashlib.sha256(
+            str.encode(data.json()["id"] + salt.get_salt())
+        ).hexdigest()
+        USER_VERIFICATION[data.json()["id"]] = code
         r.set_cookie("logged_in", "True", expires=expire_date)
-
-    # print(r.cookies)
-
+        r.set_cookie("code", code, expires=expire_date)
     return r
 
 
 @app.route("/UserInfo/")
 def userInfo():
+    check_user_verification()
     data = getCookies()
     print(data)
     if [(x) for x in data[0].values() if x == "" or x == None]:
@@ -302,6 +309,13 @@ def users():
 
 @app.route("/about/")
 def about():
+    data = getCookies()[0]
+    r = make_response(render_template("about.html", data=[data]))
+    return r
+
+
+@app.route("/github/")
+def github():
     return redirect("https://github.com/MMazenA/spotifyProject")
 
 
