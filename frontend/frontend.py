@@ -39,8 +39,6 @@ expire_date = expire_date + datetime.timedelta(days=30)
 
 def check_user_verified():
     cookies = getCookies()[0]
-    print(1, session.get(cookies.get("id")))
-    print(2, cookies.get("code"))
     if session.get(cookies.get("id")) != cookies.get("code"):
         return False
     return True
@@ -242,7 +240,6 @@ def code():
             str.encode(data.json()["id"] + salt.get_salt())
         ).hexdigest()
         session[data.json()["id"]] = code
-        print("WHAT?????",session)
         r.set_cookie("logged_in", "True", expires=expire_date)
         r.set_cookie("code", code, expires=expire_date)
     return r
@@ -251,9 +248,7 @@ def code():
 @app.route("/UserInfo/")
 def userInfo():
     data = getCookies()
-    print(data)
     if not check_user_verified():
-        print(session)
         return redirect(url_for("log_out"))
     if [(x) for x in data[0].values() if x == "" or x == None]:
         resp = make_response(render_template("accessDenied.html", data=data))
