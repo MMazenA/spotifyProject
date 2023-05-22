@@ -27,13 +27,8 @@ csrf = CSRFProtect(app)
 app.secret_key = os.urandom(24)
 expire_date = datetime.datetime.now()
 expire_date = expire_date + datetime.timedelta(days=30)
-USER_VERIFICATION = {}
 
 
-def verify_user():
-    cookies = getCookies()[0]
-    if cookies.get("logged_in") == True:
-        return True
 
 
 # @app.before_request
@@ -42,11 +37,13 @@ def verify_user():
 #         return "405", 405
 
 
-def check_user_verification():
+def check_user_verified():
     cookies = getCookies()[0]
-    if USER_VERIFICATION.get(cookies.get("userID")) != cookies.get("code"):
-        r = redirect(url_for("log_out"))
-        return r
+    print(1, session.get(cookies.get("id")))
+    print(2, cookies.get("code"))
+    if session.get(cookies.get("id")) != cookies.get("code"):
+        return False
+    return True
 
 
 def getCookies():
@@ -244,7 +241,8 @@ def code():
         code = hashlib.sha256(
             str.encode(data.json()["id"] + salt.get_salt())
         ).hexdigest()
-        USER_VERIFICATION[data.json()["id"]] = code
+        session[data.json()["id"]] = code
+        print("WHAT?????",session)
         r.set_cookie("logged_in", "True", expires=expire_date)
         r.set_cookie("code", code, expires=expire_date)
     return r
@@ -252,9 +250,11 @@ def code():
 
 @app.route("/UserInfo/")
 def userInfo():
-    check_user_verification()
     data = getCookies()
     print(data)
+    if not check_user_verified():
+        print(session)
+        return redirect(url_for("log_out"))
     if [(x) for x in data[0].values() if x == "" or x == None]:
         resp = make_response(render_template("accessDenied.html", data=data))
         resp.set_cookie("userID", "", expires=1)
