@@ -4,11 +4,20 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<ul>
+
+<div style="min-height: 85vh" class="center-screen">
+    <font size="+2" COLOR="WHITE"><strong>
     {% for item in data %}
-    <FONT COLOR="WHITE">
-        <li>{{item.display_name}}</li>
-        <li>{{item.id}}</li>
-        {% endfor %}
-</ul>
+        <div id="name" class="center-screen2">{{item.display_name}}</div>
+        <div id="id">{{item.id}}</div>
+        <br>
+        <div><a class="link" href="/log_out">logout</a></div>
+    {% endfor %}
+    </strong>
+    <br>
+</div>
+<div style="min-height: 5vh" class="center-screen">
+    <div><a class="link" href="/delete_confirm">Delete Account</a></div>
+</div>
+</font>
 {% endblock %}

@@ -3,17 +3,19 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="center-screen">
-        <div id="song_name_div" class="center-screen2">
+<font size="+2" COLOR="WHITE"><strong>
+        <div id="song_name_div" style="min-height: 85vh" class="center-screen">
+            <table>
             {% for result in data %}
-            <tr>
-                {% for elem in result.names %}
-                <td><a href="/User/{{elem.id}}/">{{elem.display_name}} ({{elem.id}})</a></td>
-                <!-- <td>{{elem.id}}</td> -->
+            {% for elem in result.names %}
+            <tr class="link_margin">
+                <td><a class="link_users" href="/User/{{elem.id}}/">{{elem.display_name}}</a></td>
                 <br>
-                {% endfor %}
+                <!-- <td><a href="/User/{{elem.id}}/">{{elem.display_name}} ({{elem.id}})</a></td> -->
             </tr>
             {% endfor %}
-        </div>
+            {% endfor %}
+        </table>
     </div>
+</font></strong>
 {% endblock %}

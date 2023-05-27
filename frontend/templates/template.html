@@ -20,15 +20,15 @@
                 {% endif %}
                 {% endfor %}
                 <li><a href="/about">About</a></li>
-                <li><a href="/github">GitHub</a></li>
                 <li><a href="/Users">Users</a></li>
+                <li><a href="/github">GitHub</a></li>
             </ul>
         </nav>
         {% for item in data %}
         {% if "True" in item.logged_in%}
         <a class="cta" href="/UserInfo">{{item.display_name}}</a>
         {% else %}
-        <a class="cta" href="/confirm">Login</a>
+        <a class="cta" href="/confirm">Login with Spotify</a>
         {% endif %}
         <p class="menu cta">Menu</p>
         {% endfor %}

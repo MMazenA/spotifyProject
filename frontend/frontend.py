@@ -28,13 +28,11 @@ app.secret_key = os.urandom(24)
 expire_date = datetime.datetime.now()
 expire_date = expire_date + datetime.timedelta(days=30)
 
-
-
-
-# @app.before_request
-# def check_request_url():
-#     if "mazenmirza" not in request.root_url:
-#         return "405", 405
+@app.before_request
+def check_request_url():
+    if "mazenmirza" not in request.root_url:
+        new_url = request.url.replace(request.host, "mazenmirza.com")
+        return redirect(new_url)
 
 
 def check_user_verified():
@@ -264,10 +262,12 @@ def userInfo():
 
 @app.route("/log_out/")
 def log_out():
+
     resp = redirect(url_for("root"))
     resp.set_cookie("userID", "", expires=1)
     resp.set_cookie("displayUser", "", expires=1)
     resp.set_cookie("logged_in", "False", expires=expire_date)
+    
 
     return resp
 
@@ -318,6 +318,41 @@ def github():
 def confirm():
     cookies_data = getCookies()
     r = make_response(render_template("confirm.html", data=cookies_data))
+    return r
+
+@app.route("/delete_confirm/")
+def delete_confirm():
+    if not check_user_verified():
+        return redirect(url_for("log_out"))
+    cookies_data = getCookies()
+    r = make_response(render_template("delete_confirm.html", data=cookies_data))
+    return r
+
+@app.route("/delete/")
+def delete():
+    cookies_data = getCookies()
+    if not check_user_verified():
+        return redirect(url_for("log_out"))
+    if request.referrer != "https://mazenmirza.com/delete_confirm/":
+        return redirect(url_for("delete_confirm"))
+    
+    delete = requests.post("http://localhost:9888" + "/delete_user/" + cookies_data[0]["id"], timeout=5)
+    if delete.status_code !=200:
+        return redirect(url_for("500"))
+
+    resp = redirect(url_for("account_deleted"))
+    resp.set_cookie("userID", "", expires=1)
+    resp.set_cookie("displayUser", "", expires=1)
+    resp.set_cookie("logged_in", "False", expires=expire_date)
+
+    return resp
+
+@app.route("/account_deleted/")
+def account_deleted():
+    if request.referrer != "https://mazenmirza.com/delete/" and request.referrer != "https://mazenmirza.com/delete_confirm/":
+        return redirect(url_for("delete_confirm"))
+    cookies_data=getCookies()
+    r = make_response(render_template("account_deleted.html", data=cookies_data))
     return r
 
 
