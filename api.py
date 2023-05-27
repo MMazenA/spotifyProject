@@ -11,6 +11,7 @@ import requests
 # from flask_limiter import Limiter
 # from flask_limiter.util import get_remote_address
 from flask_cors import CORS
+
 # import sqlFunc
 # import pythonSQLite
 import privateinfo
@@ -195,6 +196,11 @@ class get_top_four(Resource):
         return SQL.get_top_four(id)
 
 
+class delete_weekly_streams(Resource):
+    def post(self, id):
+        return SQL.delete_weekly_streams(id)
+
+
 class verify_user(Resource):
     def post(self, code):
         try:
@@ -225,6 +231,12 @@ class verify_user(Resource):
             return self.post(code)
 
 
+class delete_user(Resource):
+    def post(self, id):
+        SQL.delete_user(id)
+        return 200
+
+
 api.add_resource(NewUser, "/NewUser/", endpoint="NewUser")
 api.add_resource(get_user, "/user/<id>", endpoint="user")
 api.add_resource(get_all_users, "/allusers/", endpoint="allusers")
@@ -235,6 +247,12 @@ api.add_resource(
 )
 api.add_resource(get_top_four, "/get_top_four/<id>", endpoint="get_top_four")
 api.add_resource(verify_user, "/verify_user/<code>", endpoint="verify_user")
+api.add_resource(delete_user, "/delete_user/<id>", endpoint="delete_user")
+api.add_resource(
+    delete_weekly_streams,
+    "/delete_weekly_streams/<id>",
+    endpoint="delete_weekly_streams",
+)
 
 
 if __name__ == "__main__":

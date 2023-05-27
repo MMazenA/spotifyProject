@@ -50,7 +50,7 @@ class SQL:
 
     def get_top_four(self, user_id):
         """Returns top 4 plays for the week for a given user."""
-        rows = ""
+        rows = []
         sql = f"""
             SELECT song_id,song_name,pic_link, COUNT(*) AS count 
             FROM {user_id} 
@@ -269,8 +269,39 @@ class SQL:
                 logging.debug("ERROR: Unable to create user table", err1)
                 raise Exception("ERROR: Unable to create user table", err1) from err1
 
+    def delete_user(self, user_id):
+        """Delete all reconds of a user given their user_id."""
+        with DBC.DBC() as conn:
+            cur = conn.cursor()
+            try:
+                sql = "DELETE FROM users where id=%s"
+                cur.execute(sql, (user_id,))
+                conn.commit()
+                sql = "DROP TABLE %s" % tuple((user_id,))
+                cur.execute(sql)
+                conn.commit()
+
+            except mysql.connector.Error as err1:
+                logging.debug("ERROR: Unable to create user table", err1)
+                raise Exception("ERROR: Unable to create user table", err1) from err1
+
+    def delete_weekly_streams(self, user_id):
+        """Delete all reconds of a user given their user_id."""
+        with DBC.DBC() as conn:
+            cur = conn.cursor()
+            try:
+                sql = (
+                    "DELETE FROM %s WHERE date <= DATE_SUB(CURDATE(), INTERVAL 7 DAY) "
+                    % tuple((user_id,))
+                )
+                cur.execute(sql)
+                conn.commit()
+
+            except mysql.connector.Error as err1:
+                logging.debug("ERROR: Unable to create user table", err1)
+                raise Exception("ERROR: Unable to create user table", err1) from err1
+
 
 if __name__ == "__main__":
     x = SQL()
-    print(x.get_current_song("cizox_"))
-    # print(x.get_user_info("eggzimic"))
+    print(x.delete_weekly_streams("eggzimic"))
