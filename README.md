@@ -22,8 +22,6 @@ Currently being hosted [here](https://mazenmirza.com)
 
 Order| Task |
 ------------------------------------------------: | :--------------------------------------:| 
-1 | Implement verification | 
-2 | Verify at every endpoint|
-3 | Implement delete user|
-4 | Create graph of weekly listening history|
+1 | Migrate to better hostname | 
+2 | Create graph of weekly listening history|
 

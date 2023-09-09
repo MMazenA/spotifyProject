@@ -106,9 +106,6 @@ class Sptfy:
             print("Error: Cannot connect \n", err)
             return ["408", time_string, 408]
 
-        # print()
-        # print(time_string, response, end="")  # end="" to add db server or loal
-
         if response.status_code == 401:
             print("Authorization code expired retriving new token")
             self.token = self.get_access_token()
